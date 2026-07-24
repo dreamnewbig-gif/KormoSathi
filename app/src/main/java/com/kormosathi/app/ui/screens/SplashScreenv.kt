@@ -12,10 +12,22 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavHostController
+import kotlinx.coroutines.delay
+import com.kormosathi.app.ui.navigation.Screen
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(navController: NavHostController) {
 
+    LaunchedEffect(Unit) {
+        delay(2000)
+        navController.navigate(Screen.Welcome.route) {
+            popUpTo(Screen.Splash.route) {
+                inclusive = true
+            }
+        }
+    }
     val gradient = Brush.verticalGradient(
         colors = listOf(
             Color(0xFF0D47A1),

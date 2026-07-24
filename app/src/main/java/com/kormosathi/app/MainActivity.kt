@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.kormosathi.app.ui.theme.KormoSathiTheme
-import com.kormosathi.app.ui.screens.SplashScreen
+import com.kormosathi.app.ui.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             KormoSathiTheme {
-                SplashScreen()
+                AppNavigation()
             }
         }
     }
