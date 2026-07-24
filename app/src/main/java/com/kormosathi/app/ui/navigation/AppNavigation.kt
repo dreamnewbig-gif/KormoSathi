@@ -24,11 +24,15 @@ fun AppNavigation() {
         }
 
         composable(Screen.Welcome.route) {
-            WelcomeScreen()
+            WelcomeScreen(navController)
         }
 
-        composable(Screen.Login.route) {
-            LoginScreen()
+        composable(Screen.Login.route) { backStackEntry ->
+
+            val userType =
+                backStackEntry.arguments?.getString("userType") ?: "customer"
+
+            LoginScreen(userType)
         }
 
         composable(Screen.Home.route) {
