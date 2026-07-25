@@ -1,14 +1,18 @@
 package com.kormosathi.app.ui.navigation
 
-sealed class Screen(val route: String) {
+sealed class Screen(val route:String){
 
-    object Splash : Screen("splash")
+    object Splash:Screen("splash")
+    object Welcome:Screen("welcome")
 
-    object Welcome : Screen("welcome")
+    object Login:Screen("login")
+    object Otp:Screen("otp")
 
-    object Login : Screen("login")
+    object CustomerHome:Screen("customer_home")
+    object WorkerHome:Screen("worker_home")
 
-    object Otp : Screen("otp")
+    object Profile:Screen("profile")
+    object EditProfile:Screen("edit_profile")
 
-    object Home : Screen("home")
+    object Booking:Screen("booking")
 }
