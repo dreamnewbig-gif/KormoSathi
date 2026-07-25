@@ -1,27 +1,28 @@
 package com.kormosathi.app.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kormosathi.app.ui.screens.HomeScreen
 import com.kormosathi.app.ui.screens.LoginScreen
+import com.kormosathi.app.ui.screens.OtpScreen
 import com.kormosathi.app.ui.screens.SplashScreen
 import com.kormosathi.app.ui.screens.WelcomeScreen
-import com.kormosathi.app.ui.screens.OtpScreen
+import com.kormosathi.app.viewmodel.AuthViewModel
 
 @Composable
 fun AppNavigation() {
-
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = viewModel()
 
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
     ) {
-
         composable(Screen.Splash.route) {
-            SplashScreen(navController)
+            SplashScreen(navController, authViewModel)
         }
 
         composable(Screen.Welcome.route) {
@@ -29,15 +30,15 @@ fun AppNavigation() {
         }
 
         composable(Screen.Login.route) {
-            LoginScreen(navController)
+            LoginScreen(navController, authViewModel)
         }
 
         composable(Screen.Otp.route) {
-            OtpScreen()
+            OtpScreen(navController, authViewModel)
         }
 
         composable(Screen.Home.route) {
-            HomeScreen()
+            HomeScreen(navController, authViewModel)
         }
     }
 }
