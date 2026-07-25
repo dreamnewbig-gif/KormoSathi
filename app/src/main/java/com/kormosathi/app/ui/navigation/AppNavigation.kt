@@ -8,6 +8,7 @@ import com.kormosathi.app.ui.screens.HomeScreen
 import com.kormosathi.app.ui.screens.LoginScreen
 import com.kormosathi.app.ui.screens.SplashScreen
 import com.kormosathi.app.ui.screens.WelcomeScreen
+import com.kormosathi.app.ui.screens.OtpScreen
 
 @Composable
 fun AppNavigation() {
@@ -28,7 +29,11 @@ fun AppNavigation() {
         }
 
         composable(Screen.Login.route) {
-            LoginScreen()
+            LoginScreen(navController)
+        }
+
+        composable(Screen.Otp.route) {
+            OtpScreen()
         }
 
         composable(Screen.Home.route) {

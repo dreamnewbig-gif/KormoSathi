@@ -9,9 +9,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.kormosathi.app.ui.navigation.Screen
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
 
     var phone by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
@@ -50,11 +52,19 @@ fun LoginScreen() {
 
         Button(
             onClick = {
+
                 if (phone.length != 10) {
+
                     errorMessage = "অনুগ্রহ করে ১০ সংখ্যার মোবাইল নম্বর লিখুন"
+
                 } else {
+
                     errorMessage = ""
+
+                    navController.navigate(Screen.Otp.route)
+
                 }
+
             },
             enabled = phone.length == 10,
             modifier = Modifier.fillMaxWidth()
@@ -71,6 +81,5 @@ fun LoginScreen() {
                 color = MaterialTheme.colorScheme.error
             )
         }
-
     }
 }

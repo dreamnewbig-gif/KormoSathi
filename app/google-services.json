@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "644138328051",
+    "project_id": "karmasathi-app",
+    "storage_bucket": "karmasathi-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644138328051:android:b51e3f064fa8c9c1bc7c86",
+        "android_client_info": {
+          "package_name": "com.kormosathi.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfHmxmyNcsbM6mkcqj5XkraRqIGKK8hZQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
