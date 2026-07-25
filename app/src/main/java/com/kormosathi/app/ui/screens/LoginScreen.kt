@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 fun LoginScreen() {
 
     var phone by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -33,7 +34,9 @@ fun LoginScreen() {
         OutlinedTextField(
             value = phone,
             onValueChange = {
-                if (it.length <= 10) phone = it
+                if (it.all { ch -> ch.isDigit() } && it.length <= 10) {
+                    phone = it
+                }
             },
             label = { Text("মোবাইল নম্বর") },
             keyboardOptions = KeyboardOptions(
@@ -47,11 +50,27 @@ fun LoginScreen() {
 
         Button(
             onClick = {
-
+                if (phone.length != 10) {
+                    errorMessage = "অনুগ্রহ করে ১০ সংখ্যার মোবাইল নম্বর লিখুন"
+                } else {
+                    errorMessage = ""
+                }
             },
+            enabled = phone.length == 10,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("OTP পাঠান")
         }
+
+        if (errorMessage.isNotEmpty()) {
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
     }
 }

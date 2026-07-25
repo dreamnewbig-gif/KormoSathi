@@ -64,13 +64,15 @@ fun WelcomeScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(40.dp))
 
         Button(
-            onClick = {navController.navigate("login/customer")},
+            onClick = {
+                navController.navigate(Screen.Login.route)
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFFFD54F)
             )
         ) {
             Text(
-                "👤 আমি কাজ খুঁজছি",
+                text = "👤 আমি কাজ খুঁজছি",
                 color = Color.Black
             )
         }
@@ -78,13 +80,15 @@ fun WelcomeScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {navController.navigate("login/worker")},
+            onClick = {
+                navController.navigate(Screen.Login.route)
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White
             )
         ) {
             Text(
-                "🛠️ আমি কাজ দেব",
+                text = "🛠️ আমি কাজ দেব",
                 color = Color.Black
             )
         }
