@@ -2,15 +2,22 @@ package com.kormosathi.app.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.kormosathi.app.repository.ProfileRepository
 import com.kormosathi.app.ui.navigation.Screen
@@ -18,35 +25,98 @@ import com.kormosathi.app.viewmodel.AuthViewModel
 
 @Composable
 fun HomeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+    val userName = remember { mutableStateOf("") }
+    val isLoading = remember { mutableStateOf(true) }
     
     LaunchedEffect(Unit) {
         val profileRepository = ProfileRepository()
-        val isProfileCompleted = try {
-            profileRepository.isProfileCompleted()
-        } catch (e: Exception) {
-            false
-        }
-        
-        if (!isProfileCompleted) {
-            navController.navigate(Screen.ProfileSetup.route) {
-                popUpTo(Screen.Home.route) { inclusive = true }
+        try {
+            val isProfileCompleted = profileRepository.isProfileCompleted()
+            
+            if (!isProfileCompleted) {
+                navController.navigate(Screen.ProfileSetup.route) {
+                    popUpTo(Screen.Home.route) { inclusive = true }
+                }
+            } else {
+                // Load user profile
+                val profile = profileRepository.getProfile()
+                userName.value = profile?.name ?: "ব্যবহারকারী"
+                isLoading.value = false
             }
+        } catch (e: Exception) {
+            userName.value = "ব্যবহারকারী"
+            isLoading.value = false
         }
     }
     
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("স্বাগতম কর্মসাথীতে")
-        Button(onClick = {
-            authViewModel.logout()
-            navController.navigate("welcome") {
-                popUpTo(0) { inclusive = true }
+        if (isLoading.value) {
+            CircularProgressIndicator()
+        } else {
+            Text(
+                text = "স্বাগতম, ${userName.value}",
+                fontSize = 24.sp,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+
+            Button(
+                onClick = {
+                    navController.navigate(Screen.JobList.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("চাকরি খুঁজুন")
             }
-        }) {
-            Text("লগআউট")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate(Screen.MyApplications.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("আমার আবেদন")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("প্রোফাইল")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    authViewModel.logout()
+                    navController.navigate("welcome") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("লগআউট")
+            }
         }
     }
 }
