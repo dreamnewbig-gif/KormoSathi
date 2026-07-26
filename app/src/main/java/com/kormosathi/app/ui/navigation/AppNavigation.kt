@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.kormosathi.app.ui.screens.HomeScreen
 import com.kormosathi.app.ui.screens.LoginScreen
 import com.kormosathi.app.ui.screens.OtpScreen
+import com.kormosathi.app.ui.screens.ProfileSetupScreen
 import com.kormosathi.app.ui.screens.SplashScreen
 import com.kormosathi.app.ui.screens.WelcomeScreen
 import com.kormosathi.app.viewmodel.AuthViewModel
@@ -35,6 +36,10 @@ fun AppNavigation() {
 
         composable(Screen.Otp.route) {
             OtpScreen(navController, authViewModel)
+        }
+
+        composable(Screen.ProfileSetup.route) {
+            ProfileSetupScreen(navController)
         }
 
         composable(Screen.Home.route) {

@@ -16,9 +16,23 @@ class ProfileRepository {
             val uid = auth.currentUser?.uid
                 ?: return Result.failure(Exception("User not logged in"))
 
+            val profileData = mapOf(
+                "name" to profile.name,
+                "gender" to profile.gender,
+                "age" to profile.age,
+                "district" to profile.district,
+                "block" to profile.block,
+                "village" to profile.village,
+                "pincode" to profile.pincode,
+                "category" to profile.category,
+                "experience" to profile.experience,
+                "expectedSalary" to profile.expectedSalary,
+                "profileCompleted" to true
+            )
+
             firestore.collection("users")
                 .document(uid)
-                .set(profile.copy(uid = uid))
+                .update(profileData)
                 .await()
 
             Result.success(Unit)
@@ -38,5 +52,10 @@ class ProfileRepository {
             .await()
 
         return snapshot.toObject(UserProfile::class.java)
+    }
+
+    suspend fun isProfileCompleted(): Boolean {
+        val profile = getProfile()
+        return profile?.profileCompleted ?: false
     }
 }

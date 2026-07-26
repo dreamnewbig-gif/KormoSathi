@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.kormosathi.app.repository.ProfileRepository
 import com.kormosathi.app.ui.navigation.Screen
 import com.kormosathi.app.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
@@ -23,13 +24,38 @@ fun SplashScreen(navController: NavHostController, authViewModel: AuthViewModel)
 
     LaunchedEffect(Unit) {
         delay(2000)
-        val destination = if (authViewModel.isUserLoggedIn()) Screen.Home.route else Screen.Welcome.route
-        navController.navigate(destination) {
-            popUpTo(Screen.Splash.route) {
-                inclusive = true
+        
+        val isLoggedIn = authViewModel.isUserLoggedIn()
+        
+        if (isLoggedIn) {
+            // Check if profile is completed
+            val profileRepository = ProfileRepository()
+            val isProfileCompleted = try {
+                profileRepository.isProfileCompleted()
+            } catch (e: Exception) {
+                false
+            }
+            
+            val destination = if (isProfileCompleted) {
+                Screen.Home.route
+            } else {
+                Screen.ProfileSetup.route
+            }
+            
+            navController.navigate(destination) {
+                popUpTo(Screen.Splash.route) {
+                    inclusive = true
+                }
+            }
+        } else {
+            navController.navigate(Screen.Welcome.route) {
+                popUpTo(Screen.Splash.route) {
+                    inclusive = true
+                }
             }
         }
     }
+    
     val gradient = Brush.verticalGradient(
         colors = listOf(
             Color(0xFF0D47A1),
