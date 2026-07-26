@@ -13,14 +13,35 @@ class UserRepository {
         onFailure: (Exception) -> Unit
     ) {
 
-        db.collection("users")
-            .document(user.uid)
-            .set(user)
-            .addOnSuccessListener {
-                onSuccess()
+        val document = db.collection("users").document(user.uid)
+
+        document.get()
+            .addOnSuccessListener { snapshot ->
+
+                if (snapshot.exists()) {
+
+                    // User already exists.
+                    // Don't overwrite profileCompleted or profile data.
+                    onSuccess()
+
+                } else {
+
+                    document
+                        .set(user)
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener { exception ->
+                            onFailure(exception)
+                        }
+
+                }
+
             }
             .addOnFailureListener { exception ->
                 onFailure(exception)
             }
+
     }
+
 }
