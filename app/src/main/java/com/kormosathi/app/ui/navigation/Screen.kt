@@ -7,6 +7,14 @@ sealed class Screen(val route: String) {
     object Otp : Screen("otp")
     object ProfileSetup : Screen("profile_setup")
     object Home : Screen("home")
+    object JobList : Screen("job_list")
+    object JobDetails : Screen("job_details/{jobId}") {
+        fun createRoute(jobId: String) = "job_details/$jobId"
+    }
+    object ApplyJob : Screen("apply_job/{jobId}") {
+        fun createRoute(jobId: String) = "apply_job/$jobId"
+    }
+    object MyApplications : Screen("my_applications")
 
     object CustomerHome : Screen("customer_home")
     object WorkerHome : Screen("worker_home")

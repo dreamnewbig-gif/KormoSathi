@@ -1,0 +1,171 @@
+package com.kormosathi.app.ui.screens
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.kormosathi.app.model.Job
+import com.kormosathi.app.ui.navigation.Screen
+import com.kormosathi.app.viewmodel.ApplicationViewModel
+import com.kormosathi.app.viewmodel.JobViewModel
+
+@Composable
+fun JobDetailsScreen(
+    navController: NavHostController,
+    jobId: String
+) {
+    val jobViewModel: JobViewModel = viewModel()
+    val applicationViewModel: ApplicationViewModel = viewModel()
+    val jobUiState by jobViewModel.uiState.collectAsState()
+    val appUiState by applicationViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        jobViewModel.getJobDetails(jobId)
+        applicationViewModel.checkIfApplied(jobId)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Back Button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+            }
+            Text(
+                text = "চাকরি বিবরণ",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (jobUiState.isLoading) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (jobUiState.selectedJob != null) {
+            val job = jobUiState.selectedJob!!
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                JobDetailsContent(job, appUiState.hasApplied) {
+                    navController.navigate(Screen.ApplyJob.createRoute(jobId))
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("চাকরি খুঁজে পাওয়া যায়নি")
+            }
+        }
+    }
+}
+
+@Composable
+private fun JobDetailsContent(
+    job: Job,
+    hasApplied: Boolean,
+    onApplyClick: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = job.title,
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Job Info Grid
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            InfoRow("ক্যাটাগরি:", job.category)
+            InfoRow("জেলা:", job.district)
+            InfoRow("ব্লক:", job.block)
+            InfoRow("বেতন:", "₹${job.salary}/দিন")
+            InfoRow("নিয়োগকর্তা:", job.employerName)
+            InfoRow("ফোন:", job.phone)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "বর্ণনা",
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = job.description,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onApplyClick,
+            enabled = !hasApplied,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Text(if (hasApplied) "ইতিমধ্যে আবেদন করা হয়েছে" else "এখনই আবেদন করুন")
+        }
+    }
+}
+
+@Composable
+private fun InfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
