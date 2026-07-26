@@ -6,14 +6,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kormosathi.app.ui.screens.ApplyJobScreen
+import com.kormosathi.app.ui.screens.EditJobScreen
+import com.kormosathi.app.ui.screens.EmployerDashboardScreen
 import com.kormosathi.app.ui.screens.HomeScreen
 import com.kormosathi.app.ui.screens.JobDetailsScreen
 import com.kormosathi.app.ui.screens.JobListScreen
 import com.kormosathi.app.ui.screens.LoginScreen
 import com.kormosathi.app.ui.screens.MyApplicationsScreen
 import com.kormosathi.app.ui.screens.OtpScreen
+import com.kormosathi.app.ui.screens.PostJobScreen
 import com.kormosathi.app.ui.screens.ProfileSetupScreen
+import com.kormosathi.app.ui.screens.SavedJobsScreen
 import com.kormosathi.app.ui.screens.SplashScreen
+import com.kormosathi.app.ui.screens.ViewApplicantsScreen
 import com.kormosathi.app.ui.screens.WelcomeScreen
 import com.kormosathi.app.viewmodel.AuthViewModel
 
@@ -66,6 +71,28 @@ fun AppNavigation() {
 
         composable(Screen.MyApplications.route) {
             MyApplicationsScreen(navController)
+        }
+
+        composable(Screen.EmployerDashboard.route) {
+            EmployerDashboardScreen(navController)
+        }
+
+        composable(Screen.PostJob.route) {
+            PostJobScreen(navController)
+        }
+
+        composable(Screen.EditJob.route) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
+            EditJobScreen(navController, jobId)
+        }
+
+        composable(Screen.ViewApplicants.route) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
+            ViewApplicantsScreen(navController, jobId)
+        }
+
+        composable(Screen.SavedJobs.route) {
+            SavedJobsScreen(navController)
         }
     }
 }
