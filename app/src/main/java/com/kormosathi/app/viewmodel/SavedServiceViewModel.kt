@@ -2,52 +2,52 @@ package com.kormosathi.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kormosathi.app.model.SavedJob
-import com.kormosathi.app.repository.SavedJobRepository
+import com.kormosathi.app.model.SavedService
+import com.kormosathi.app.repository.SavedServiceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class SavedJobUiState(
+data class SavedServiceUiState(
     val isLoading: Boolean = false,
-    val savedJobs: List<SavedJob> = emptyList(),
+    val savedServices: List<SavedService> = emptyList(),
     val isSuccess: Boolean = false,
     val errorMessage: String = ""
 )
 
-class SavedJobViewModel : ViewModel() {
+class SavedServiceViewModel : ViewModel() {
 
-    private val repository = SavedJobRepository()
+    private val repository = SavedServiceRepository()
 
-    private val _uiState = MutableStateFlow(SavedJobUiState())
-    val uiState: StateFlow<SavedJobUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(SavedServiceUiState())
+    val uiState: StateFlow<SavedServiceUiState> = _uiState.asStateFlow()
 
-    fun loadSavedJobs() {
+    fun loadSavedServices() {
         viewModelScope.launch {
-            _uiState.value = SavedJobUiState(isLoading = true)
+            _uiState.value = SavedServiceUiState(isLoading = true)
 
             try {
-                val savedJobs = repository.getSavedJobs()
-                _uiState.value = SavedJobUiState(
+                val savedServices = repository.getSavedServices()
+                _uiState.value = SavedServiceUiState(
                     isLoading = false,
-                    savedJobs = savedJobs
+                    savedServices = savedServices
                 )
             } catch (exception: Exception) {
-                _uiState.value = SavedJobUiState(
+                _uiState.value = SavedServiceUiState(
                     isLoading = false,
-                    errorMessage = exception.message ?: "Failed to load saved jobs"
+                    errorMessage = exception.message ?: "Failed to load saved Services"
                 )
             }
         }
     }
 
-    fun addBookmark(jobId: String, jobTitle: String, companyName: String, district: String, category: String, salary: Double) {
+    fun addBookmark(ServiceId: String, ServiceTitle: String, companyName: String, district: String, category: String, salary: Double) {
         viewModelScope.launch {
-            repository.saveJob(jobId)
+            repository.saveService(ServiceId)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true)
-                    loadSavedJobs()
+                    loadSavedServices()
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
@@ -57,12 +57,12 @@ class SavedJobViewModel : ViewModel() {
         }
     }
 
-    fun removeBookmark(jobId: String) {
+    fun removeBookmark(ServiceId: String) {
         viewModelScope.launch {
-            repository.unsaveJob(jobId)
+            repository.unsaveService(ServiceId)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true)
-                    loadSavedJobs()
+                    loadSavedServices()
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(

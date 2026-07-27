@@ -1,10 +1,10 @@
 package com.kormosathi.app.model
 
-data class SavedJob(
+data class SavedService(
     val saveId: String = "",
     val userUid: String = "",
-    val jobId: String = "",
-    val jobTitle: String = "",
+    val ServiceId: String = "",
+    val ServiceTitle: String = "",
     val companyName: String = "",
     val district: String = "",
     val category: String = "",

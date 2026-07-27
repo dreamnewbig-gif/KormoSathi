@@ -1,7 +1,7 @@
 package com.kormosathi.app.model
 
-data class Employer(
-    val employerId: String = "",
+data class Provider(
+    val ProviderId: String = "",
     val uid: String = "",
     val companyName: String = "",
     val ownerName: String = "",

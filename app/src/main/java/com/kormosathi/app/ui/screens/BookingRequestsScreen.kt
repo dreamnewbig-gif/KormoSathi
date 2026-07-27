@@ -37,31 +37,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.model.JobApplication
-import com.kormosathi.app.viewmodel.EmployerViewModel
+import com.kormosathi.app.model.Booking
+import com.kormosathi.app.viewmodel.ProviderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ViewApplicantsScreen(navController: NavHostController, jobId: String) {
-    val employerViewModel: EmployerViewModel = viewModel()
-    val uiState by employerViewModel.uiState.collectAsState()
+fun ViewApplicantsScreen(navController: NavHostController, ServiceId: String) {
+    val ProviderViewModel: ProviderViewModel = viewModel()
+    val uiState by ProviderViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(jobId) {
-        employerViewModel.getApplicants(jobId)
+    LaunchedEffect(ServiceId) {
+        ProviderViewModel.getApplicants(ServiceId)
     }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             snackbarHostState.showSnackbar("অপারেশন সফল")
-            employerViewModel.clearSuccess()
+            ProviderViewModel.clearSuccess()
         }
     }
 
     LaunchedEffect(uiState.errorMessage) {
         if (uiState.errorMessage.isNotEmpty()) {
             snackbarHostState.showSnackbar(uiState.errorMessage)
-            employerViewModel.clearError()
+            ProviderViewModel.clearError()
         }
     }
 
@@ -109,12 +109,12 @@ fun ViewApplicantsScreen(navController: NavHostController, jobId: String) {
                 ) {
                     items(uiState.applicants) { applicant ->
                         ApplicantCard(
-                            application = applicant,
+                            Booking = applicant,
                             onAccept = {
-                                employerViewModel.acceptApplicant(jobId, applicant.applicationId)
+                                ProviderViewModel.acceptApplicant(ServiceId, applicant.BookingId)
                             },
                             onReject = {
-                                employerViewModel.rejectApplicant(jobId, applicant.applicationId)
+                                ProviderViewModel.rejectApplicant(ServiceId, applicant.BookingId)
                             }
                         )
                     }
@@ -126,14 +126,14 @@ fun ViewApplicantsScreen(navController: NavHostController, jobId: String) {
 
 @Composable
 private fun ApplicantCard(
-    application: JobApplication,
+    Booking: Booking,
     onAccept: () -> Unit,
     onReject: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = application.applicantName,
+                text = Booking.applicantName,
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -143,7 +143,7 @@ private fun ApplicantCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        when (application.status) {
+                        when (Booking.status) {
                             "accepted" -> Color(0xFF4CAF50).copy(alpha = 0.1f)
                             "rejected" -> Color(0xFFF44336).copy(alpha = 0.1f)
                             else -> Color(0xFF2196F3).copy(alpha = 0.1f)
@@ -153,7 +153,7 @@ private fun ApplicantCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "স্ট্যাটাস: ${application.status}",
+                    text = "স্ট্যাটাস: ${Booking.status}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -161,12 +161,12 @@ private fun ApplicantCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "ফোন: ${application.phone}",
+                text = "ফোন: ${Booking.phone}",
                 style = MaterialTheme.typography.bodySmall
             )
 
             Text(
-                text = "আবেদন করা হয়েছে: ${application.appliedAt}",
+                text = "আবেদন করা হয়েছে: ${Booking.appliedAt}",
                 style = MaterialTheme.typography.bodySmall
             )
 
@@ -179,7 +179,7 @@ private fun ApplicantCard(
                 Button(
                     onClick = onAccept,
                     modifier = Modifier.weight(1f),
-                    enabled = application.status == "pending"
+                    enabled = Booking.status == "pending"
                 ) {
                     Text("গৃহণ করুন")
                 }
@@ -187,7 +187,7 @@ private fun ApplicantCard(
                 OutlinedButton(
                     onClick = onReject,
                     modifier = Modifier.weight(1f),
-                    enabled = application.status == "pending"
+                    enabled = Booking.status == "pending"
                 ) {
                     Text("প্রত্যাখ্যান করুন")
                 }

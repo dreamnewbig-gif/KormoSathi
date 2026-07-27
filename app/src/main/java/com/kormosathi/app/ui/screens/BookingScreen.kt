@@ -1,6 +1,5 @@
 package com.kormosathi.app.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -36,15 +34,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.kormosathi.app.repository.ProfileRepository
 import com.kormosathi.app.ui.navigation.Screen
-import com.kormosathi.app.viewmodel.ApplicationViewModel
+import com.kormosathi.app.viewmodel.BookingViewModel
 
 @Composable
-fun ApplyJobScreen(
+fun ApplyServiceScreen(
     navController: NavHostController,
-    jobId: String
+    ServiceId: String
 ) {
-    val applicationViewModel: ApplicationViewModel = viewModel()
-    val appUiState by applicationViewModel.uiState.collectAsState()
+    val BookingViewModel: BookingViewModel = viewModel()
+    val appUiState by BookingViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var applicantName by remember { mutableStateOf("") }
@@ -67,8 +65,8 @@ fun ApplyJobScreen(
     LaunchedEffect(appUiState.isSuccess) {
         if (appUiState.isSuccess) {
             snackbarHostState.showSnackbar("আপনি সফলভাবে চাকরির জন্য আবেদন করেছেন")
-            navController.navigate(Screen.JobList.route) {
-                popUpTo(Screen.ApplyJob.route) { inclusive = true }
+            navController.navigate(Screen.ServiceList.route) {
+                popUpTo(Screen.ApplyService.route) { inclusive = true }
             }
         }
     }
@@ -76,7 +74,7 @@ fun ApplyJobScreen(
     LaunchedEffect(appUiState.errorMessage) {
         if (appUiState.errorMessage.isNotEmpty()) {
             snackbarHostState.showSnackbar(appUiState.errorMessage)
-            applicationViewModel.clearError()
+            BookingViewModel.clearError()
         }
     }
 
@@ -128,8 +126,8 @@ fun ApplyJobScreen(
             Button(
                 onClick = {
                     if (validateForm(applicantName, phone)) {
-                        applicationViewModel.applyForJob(
-                            jobId,
+                        BookingViewModel.applyForService(
+                            ServiceId,
                             applicantName,
                             phone
                         )

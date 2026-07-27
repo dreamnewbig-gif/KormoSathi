@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,25 +36,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.model.SavedJob
+import com.kormosathi.app.model.SavedService
 import com.kormosathi.app.ui.navigation.Screen
-import com.kormosathi.app.viewmodel.SavedJobViewModel
+import com.kormosathi.app.viewmodel.SavedServiceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SavedJobsScreen(navController: NavHostController) {
-    val savedJobViewModel: SavedJobViewModel = viewModel()
-    val uiState by savedJobViewModel.uiState.collectAsState()
+fun SavedServicesScreen(navController: NavHostController) {
+    val savedServiceViewModel: SavedServiceViewModel = viewModel()
+    val uiState by savedServiceViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        savedJobViewModel.loadSavedJobs()
+        savedServiceViewModel.loadSavedServices()
     }
 
     LaunchedEffect(uiState.errorMessage) {
         if (uiState.errorMessage.isNotEmpty()) {
             snackbarHostState.showSnackbar(uiState.errorMessage)
-            savedJobViewModel.clearError()
+            savedServiceViewModel.clearError()
         }
     }
 
@@ -83,7 +82,7 @@ fun SavedJobsScreen(navController: NavHostController) {
                 CircularProgressIndicator()
             }
         } else {
-            if (uiState.savedJobs.isEmpty()) {
+            if (uiState.savedServices.isEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -101,14 +100,14 @@ fun SavedJobsScreen(navController: NavHostController) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(uiState.savedJobs) { savedJob ->
-                        SavedJobCard(
-                            savedJob = savedJob,
+                    items(uiState.savedServices) { savedService ->
+                        SavedServiceCard(
+                            savedService = savedService,
                             onView = {
-                                navController.navigate(Screen.JobDetails.createRoute(savedJob.jobId))
+                                navController.navigate(Screen.ServiceDetails.createRoute(savedService.ServiceId))
                             },
                             onRemove = {
-                                savedJobViewModel.removeBookmark(savedJob.jobId)
+                                savedServiceViewModel.removeBookmark(savedService.ServiceId)
                             }
                         )
                     }
@@ -119,8 +118,8 @@ fun SavedJobsScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun SavedJobCard(
-    savedJob: SavedJob,
+private fun SavedServiceCard(
+    savedService: SavedService,
     onView: () -> Unit,
     onRemove: () -> Unit
 ) {
@@ -133,11 +132,11 @@ private fun SavedJobCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = savedJob.jobTitle,
+                        text = savedService.ServiceTitle,
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = savedJob.companyName,
+                        text = savedService.companyName,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -154,12 +153,12 @@ private fun SavedJobCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "${savedJob.district} - ${savedJob.category}",
+                text = "${savedService.district} - ${savedService.category}",
                 style = MaterialTheme.typography.bodySmall
             )
 
             Text(
-                text = "বেতন: ৳${savedJob.salary}",
+                text = "বেতন: ৳${savedService.salary}",
                 style = MaterialTheme.typography.bodySmall
             )
 

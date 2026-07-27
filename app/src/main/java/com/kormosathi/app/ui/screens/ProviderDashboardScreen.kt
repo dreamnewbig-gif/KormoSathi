@@ -1,7 +1,5 @@
 package com.kormosathi.app.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,13 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,27 +33,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.model.Job
+import com.kormosathi.app.model.Service
 import com.kormosathi.app.ui.navigation.Screen
-import com.kormosathi.app.viewmodel.EmployerViewModel
+import com.kormosathi.app.viewmodel.ProviderViewModel
 
 @Composable
-fun EmployerDashboardScreen(navController: NavHostController) {
-    val employerViewModel: EmployerViewModel = viewModel()
-    val uiState by employerViewModel.uiState.collectAsState()
+fun ProviderDashboardScreen(navController: NavHostController) {
+    val ProviderViewModel: ProviderViewModel = viewModel()
+    val uiState by ProviderViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             snackbarHostState.showSnackbar("অপারেশন সফল")
-            employerViewModel.clearSuccess()
+            ProviderViewModel.clearSuccess()
         }
     }
 
     LaunchedEffect(uiState.errorMessage) {
         if (uiState.errorMessage.isNotEmpty()) {
             snackbarHostState.showSnackbar(uiState.errorMessage)
-            employerViewModel.clearError()
+            ProviderViewModel.clearError()
         }
     }
 
@@ -81,8 +77,8 @@ fun EmployerDashboardScreen(navController: NavHostController) {
                 CircularProgressIndicator()
             }
         } else {
-            // Employer Info Card
-            if (uiState.employer != null) {
+            // Provider Info Card
+            if (uiState.provider != null) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -90,19 +86,19 @@ fun EmployerDashboardScreen(navController: NavHostController) {
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = uiState.employer!!.companyName,
+                            text = uiState.provider!!.companyName,
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            text = "প্রস্তাবনা: ${uiState.jobs.size}",
+                            text = "প্রস্তাবনা: ${uiState.services.size}",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
             }
 
-            // Jobs List
-            if (uiState.jobs.isEmpty()) {
+            // Services List
+            if (uiState.services.isEmpty()) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -114,17 +110,17 @@ fun EmployerDashboardScreen(navController: NavHostController) {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(uiState.jobs) { job ->
-                        JobManagementCard(
-                            job = job,
+                    items(uiState.services) { Service ->
+                        ServiceManagementCard(
+                            service = Service,
                             onEdit = {
-                                navController.navigate(Screen.EditJob.createRoute(job.jobId))
+                                navController.navigate(Screen.EditService.createRoute(Service.ServiceId))
                             },
                             onDelete = {
-                                employerViewModel.deleteJob(job.jobId)
+                                ProviderViewModel.deleteService(Service.ServiceId)
                             },
                             onViewApplicants = {
-                                navController.navigate(Screen.ViewApplicants.createRoute(job.jobId))
+                                navController.navigate(Screen.ViewApplicants.createRoute(Service.ServiceId))
                             }
                         )
                     }
@@ -137,8 +133,8 @@ fun EmployerDashboardScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun JobManagementCard(
-    job: Job,
+private fun ServiceManagementCard(
+    service: Service,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onViewApplicants: () -> Unit
@@ -152,11 +148,11 @@ private fun JobManagementCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = job.title,
+                        text = service.title,
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = "${job.district} - ${job.category}",
+                        text = "${service.district} - ${service.category}",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

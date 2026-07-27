@@ -15,7 +15,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -34,13 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.viewmodel.EmployerViewModel
+import com.kormosathi.app.viewmodel.ProviderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditJobScreen(navController: NavHostController, jobId: String) {
-    val employerViewModel: EmployerViewModel = viewModel()
-    val uiState by employerViewModel.uiState.collectAsState()
+fun EditServiceScreen(navController: NavHostController, ServiceId: String) {
+    val ProviderViewModel: ProviderViewModel = viewModel()
+    val uiState by ProviderViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var title by remember { mutableStateOf("") }
@@ -51,21 +50,21 @@ fun EditJobScreen(navController: NavHostController, jobId: String) {
     var salary by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        val job = uiState.jobs.find { it.jobId == jobId }
-        if (job != null) {
-            title = job.title
-            description = job.description
-            category = job.category
-            district = job.district
-            block = job.block
-            salary = job.salary.toString()
+        val Service = uiState.services.find { it.ServiceId == ServiceId }
+        if (Service != null) {
+            title = Service.title
+            description = Service.description
+            category = Service.category
+            district = Service.district
+            block = Service.block
+            salary = Service.salary.toString()
         }
     }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             snackbarHostState.showSnackbar("চাকরি আপডেট হয়েছে")
-            employerViewModel.clearSuccess()
+            ProviderViewModel.clearSuccess()
             navController.popBackStack()
         }
     }
@@ -73,7 +72,7 @@ fun EditJobScreen(navController: NavHostController, jobId: String) {
     LaunchedEffect(uiState.errorMessage) {
         if (uiState.errorMessage.isNotEmpty()) {
             snackbarHostState.showSnackbar(uiState.errorMessage)
-            employerViewModel.clearError()
+            ProviderViewModel.clearError()
         }
     }
 
@@ -177,8 +176,8 @@ fun EditJobScreen(navController: NavHostController, jobId: String) {
                             if (title.isNotBlank() && description.isNotBlank() && 
                                 category.isNotBlank() && district.isNotBlank() && 
                                 block.isNotBlank() && salary.isNotBlank()) {
-                                employerViewModel.updateJob(
-                                    jobId = jobId,
+                                ProviderViewModel.updateService(
+                                    ServiceId = ServiceId,
                                     title = title,
                                     description = description,
                                     category = category,

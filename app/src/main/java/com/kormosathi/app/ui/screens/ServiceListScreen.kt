@@ -12,17 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -39,14 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.model.Job
+import com.kormosathi.app.model.Service
 import com.kormosathi.app.ui.navigation.Screen
-import com.kormosathi.app.viewmodel.JobViewModel
+import com.kormosathi.app.viewmodel.ServiceViewModel
 
 @Composable
-fun JobListScreen(navController: NavHostController) {
-    val jobViewModel: JobViewModel = viewModel()
-    val uiState by jobViewModel.uiState.collectAsState()
+fun ServiceListScreen(navController: NavHostController) {
+    val ServiceViewModel: ServiceViewModel = viewModel()
+    val uiState by ServiceViewModel.uiState.collectAsState()
 
     var searchTitle by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("") }
@@ -187,7 +181,7 @@ fun JobListScreen(navController: NavHostController) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = {
-                        jobViewModel.searchJobs(searchTitle, selectedCategory, selectedDistrict)
+                        ServiceViewModel.searchServices(searchTitle, selectedCategory, selectedDistrict)
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -201,7 +195,7 @@ fun JobListScreen(navController: NavHostController) {
                         searchTitle = ""
                         selectedCategory = ""
                         selectedDistrict = ""
-                        jobViewModel.resetSearch()
+                        ServiceViewModel.resetSearch()
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -214,7 +208,7 @@ fun JobListScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Jobs List
+        // Services List
         if (uiState.isLoading) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -223,7 +217,7 @@ fun JobListScreen(navController: NavHostController) {
             ) {
                 CircularProgressIndicator()
             }
-        } else if (uiState.jobs.isEmpty()) {
+        } else if (uiState.services.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -235,8 +229,8 @@ fun JobListScreen(navController: NavHostController) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(uiState.jobs) { job ->
-                    JobCard(job, navController)
+                items(uiState.services) { Service ->
+                    ServiceCard(Service, navController)
                 }
             }
         }
@@ -244,12 +238,12 @@ fun JobListScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun JobCard(job: Job, navController: NavHostController) {
+private fun ServiceCard(service: Service, navController: NavHostController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                navController.navigate(Screen.JobDetails.createRoute(job.jobId))
+                navController.navigate(Screen.ServiceDetails.createRoute(service.ServiceId))
             }
             .padding(0.dp)
     ) {
@@ -259,7 +253,7 @@ private fun JobCard(job: Job, navController: NavHostController) {
                 .padding(16.dp)
         ) {
             Text(
-                text = job.title,
+                text = service.title,
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -270,11 +264,11 @@ private fun JobCard(job: Job, navController: NavHostController) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "জেলা: ${job.district}",
+                    text = "জেলা: ${service.district}",
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = "ক্যাটাগরি: ${job.category}",
+                    text = "ক্যাটাগরি: ${service.category}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -282,7 +276,7 @@ private fun JobCard(job: Job, navController: NavHostController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "বেতন: ₹${job.salary}/দিন",
+                text = "বেতন: ₹${service.salary}/দিন",
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -290,7 +284,7 @@ private fun JobCard(job: Job, navController: NavHostController) {
 
             Button(
                 onClick = {
-                    navController.navigate(Screen.JobDetails.createRoute(job.jobId))
+                    navController.navigate(Screen.ServiceDetails.createRoute(service.ServiceId))
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

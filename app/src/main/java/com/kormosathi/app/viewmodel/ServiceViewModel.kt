@@ -2,43 +2,43 @@ package com.kormosathi.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kormosathi.app.model.Job
-import com.kormosathi.app.repository.JobRepository
+import com.kormosathi.app.model.Service
+import com.kormosathi.app.repository.ServiceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class JobUiState(
+data class ServiceUiState(
     val isLoading: Boolean = false,
-    val jobs: List<Job> = emptyList(),
-    val selectedJob: Job? = null,
+    val services: List<Service> = emptyList(),
+    val selectedService: Service? = null,
     val errorMessage: String = "",
     val searchTitle: String = "",
     val searchCategory: String = "",
     val searchDistrict: String = ""
 )
 
-class JobViewModel : ViewModel() {
+class ServiceViewModel : ViewModel() {
 
-    private val repository = JobRepository()
+    private val repository = ServiceRepository()
 
-    private val _uiState = MutableStateFlow(JobUiState())
-    val uiState: StateFlow<JobUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ServiceUiState())
+    val uiState: StateFlow<ServiceUiState> = _uiState.asStateFlow()
 
     init {
-        loadAllJobs()
+        loadAllServices()
     }
 
-    private fun loadAllJobs() {
+    private fun loadAllServices() {
         viewModelScope.launch {
-            _uiState.value = JobUiState(isLoading = true)
-            val jobs = repository.getAllJobs()
-            _uiState.value = JobUiState(isLoading = false, jobs = jobs)
+            _uiState.value = ServiceUiState(isLoading = true)
+            val Services = repository.getAllServices()
+            _uiState.value = ServiceUiState(isLoading = false, services = Services)
         }
     }
 
-    fun searchJobs(title: String, category: String, district: String) {
+    fun searchServices(title: String, category: String, district: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
@@ -47,10 +47,10 @@ class JobViewModel : ViewModel() {
                 searchDistrict = district
             )
 
-            val jobs = repository.searchJobs(title, category, district)
-            _uiState.value = JobUiState(
+            val Services = repository.searchServices(title, category, district)
+            _uiState.value = ServiceUiState(
                 isLoading = false,
-                jobs = jobs,
+                services = Services,
                 searchTitle = title,
                 searchCategory = category,
                 searchDistrict = district
@@ -62,10 +62,10 @@ class JobViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, searchDistrict = district)
 
-            val jobs = repository.filterByDistrict(district)
-            _uiState.value = JobUiState(
+            val Services = repository.filterByDistrict(district)
+            _uiState.value = ServiceUiState(
                 isLoading = false,
-                jobs = jobs,
+                services = Services,
                 searchDistrict = district
             )
         }
@@ -75,30 +75,30 @@ class JobViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, searchCategory = category)
 
-            val jobs = repository.filterByCategory(category)
-            _uiState.value = JobUiState(
+            val Services = repository.filterByCategory(category)
+            _uiState.value = ServiceUiState(
                 isLoading = false,
-                jobs = jobs,
+                services = Services,
                 searchCategory = category
             )
         }
     }
 
-    fun getJobDetails(jobId: String) {
+    fun getServiceDetails(ServiceId: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val job = repository.getJobById(jobId)
+            val Service = repository.getServiceById(ServiceId)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
-                selectedJob = job,
-                errorMessage = if (job == null) "Job not found" else ""
+                selectedService = Service,
+                errorMessage = if (Service == null) "Service not found" else ""
             )
         }
     }
 
     fun resetSearch() {
-        loadAllJobs()
+        loadAllServices()
     }
 
     fun clearError() {

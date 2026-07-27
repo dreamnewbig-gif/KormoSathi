@@ -2,16 +2,16 @@ package com.kormosathi.app.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.kormosathi.app.model.JobApplication
+import com.kormosathi.app.model.Booking
 import kotlinx.coroutines.tasks.await
 
-class ApplicationRepository {
+class BookingRepository {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    suspend fun applyForJob(
-        jobId: String,
+    suspend fun applyForService(
+        ServiceId: String,
         applicantName: String,
         phone: String
     ): Result<String> {
@@ -19,21 +19,21 @@ class ApplicationRepository {
             val applicantUid = auth.currentUser?.uid
                 ?: return Result.failure(Exception("User not logged in"))
 
-            // Check if user already applied for this job
-            val existingApplication = firestore.collection("applications")
-                .whereEqualTo("jobId", jobId)
+            // Check if user already applied for this Service
+            val existingBooking = firestore.collection("Bookings")
+                .whereEqualTo("ServiceId", ServiceId)
                 .whereEqualTo("applicantUid", applicantUid)
                 .get()
                 .await()
 
-            if (!existingApplication.isEmpty) {
-                return Result.failure(Exception("Already applied for this job"))
+            if (!existingBooking.isEmpty) {
+                return Result.failure(Exception("Already applied for this Service"))
             }
 
-            val applicationId = firestore.collection("applications").document().id
-            val application = JobApplication(
-                applicationId = applicationId,
-                jobId = jobId,
+            val BookingId = firestore.collection("Bookings").document().id
+            val Booking = Booking(
+                BookingId = BookingId,
+                ServiceId = ServiceId,
                 applicantUid = applicantUid,
                 applicantName = applicantName,
                 phone = phone,
@@ -41,54 +41,54 @@ class ApplicationRepository {
                 status = "pending"
             )
 
-            firestore.collection("applications")
-                .document(applicationId)
-                .set(application)
+            firestore.collection("Bookings")
+                .document(BookingId)
+                .set(Booking)
                 .await()
 
-            Result.success(applicationId)
+            Result.success(BookingId)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun getMyApplications(): List<JobApplication> {
+    suspend fun getMyBookings(): List<Booking> {
         return try {
             val applicantUid = auth.currentUser?.uid
                 ?: return emptyList()
 
-            firestore.collection("applications")
+            firestore.collection("Bookings")
                 .whereEqualTo("applicantUid", applicantUid)
                 .orderBy("appliedAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .await()
                 .documents
-                .mapNotNull { it.toObject(JobApplication::class.java) }
+                .mapNotNull { it.toObject(Booking::class.java) }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    suspend fun getApplicationsForJob(jobId: String): List<JobApplication> {
+    suspend fun getBookingsForService(ServiceId: String): List<Booking> {
         return try {
-            firestore.collection("applications")
-                .whereEqualTo("jobId", jobId)
+            firestore.collection("Bookings")
+                .whereEqualTo("ServiceId", ServiceId)
                 .orderBy("appliedAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .await()
                 .documents
-                .mapNotNull { it.toObject(JobApplication::class.java) }
+                .mapNotNull { it.toObject(Booking::class.java) }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    suspend fun hasUserApplied(jobId: String): Boolean {
+    suspend fun hasUserApplied(ServiceId: String): Boolean {
         return try {
             val applicantUid = auth.currentUser?.uid ?: return false
 
-            val result = firestore.collection("applications")
-                .whereEqualTo("jobId", jobId)
+            val result = firestore.collection("Bookings")
+                .whereEqualTo("ServiceId", ServiceId)
                 .whereEqualTo("applicantUid", applicantUid)
                 .get()
                 .await()
@@ -99,13 +99,13 @@ class ApplicationRepository {
         }
     }
 
-    suspend fun updateApplicationStatus(
-        applicationId: String,
+    suspend fun updateBookingStatus(
+        BookingId: String,
         status: String
     ): Result<Unit> {
         return try {
-            firestore.collection("applications")
-                .document(applicationId)
+            firestore.collection("Bookings")
+                .document(BookingId)
                 .update("status", status)
                 .await()
             Result.success(Unit)

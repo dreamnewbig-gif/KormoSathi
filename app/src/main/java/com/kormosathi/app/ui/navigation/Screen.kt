@@ -7,27 +7,27 @@ sealed class Screen(val route: String) {
     object Otp : Screen("otp")
     object ProfileSetup : Screen("profile_setup")
     object Home : Screen("home")
-    object JobList : Screen("job_list")
-    object JobDetails : Screen("job_details/{jobId}") {
-        fun createRoute(jobId: String) = "job_details/$jobId"
+    object ServiceList : Screen("Service_list")
+    object ServiceDetails : Screen("Service_details/{ServiceId}") {
+        fun createRoute(ServiceId: String) = "Service_details/$ServiceId"
     }
-    object ApplyJob : Screen("apply_job/{jobId}") {
-        fun createRoute(jobId: String) = "apply_job/$jobId"
+    object ApplyService : Screen("apply_Service/{ServiceId}") {
+        fun createRoute(ServiceId: String) = "apply_Service/$ServiceId"
     }
-    object MyApplications : Screen("my_applications")
+    object MyBookings : Screen("my_Bookings")
     
-    // Employer Routes
-    object EmployerDashboard : Screen("employer_dashboard")
-    object PostJob : Screen("post_job")
-    object EditJob : Screen("edit_job/{jobId}") {
-        fun createRoute(jobId: String) = "edit_job/$jobId"
+    // Provider Routes
+    object ProviderDashboard : Screen("Provider_dashboard")
+    object PostService : Screen("post_Service")
+    object EditService : Screen("edit_Service/{ServiceId}") {
+        fun createRoute(ServiceId: String) = "edit_Service/$ServiceId"
     }
-    object ViewApplicants : Screen("view_applicants/{jobId}") {
-        fun createRoute(jobId: String) = "view_applicants/$jobId"
+    object ViewApplicants : Screen("view_applicants/{ServiceId}") {
+        fun createRoute(ServiceId: String) = "view_applicants/$ServiceId"
     }
     
-    // Saved Jobs
-    object SavedJobs : Screen("saved_jobs")
+    // Saved Services
+    object SavedServices : Screen("saved_Services")
 
     object CustomerHome : Screen("customer_home")
     object WorkerHome : Screen("worker_home")

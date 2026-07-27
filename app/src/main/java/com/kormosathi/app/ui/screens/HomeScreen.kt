@@ -67,7 +67,7 @@ fun HomeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
 
             Button(
                 onClick = {
-                    navController.navigate(Screen.JobList.route)
+                    navController.navigate(Screen.ServiceList.route)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -80,7 +80,7 @@ fun HomeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
 
             Button(
                 onClick = {
-                    navController.navigate(Screen.MyApplications.route)
+                    navController.navigate(Screen.MyBookings.route)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

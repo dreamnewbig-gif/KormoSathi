@@ -27,24 +27,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.model.Job
+import com.kormosathi.app.model.Service
 import com.kormosathi.app.ui.navigation.Screen
-import com.kormosathi.app.viewmodel.ApplicationViewModel
-import com.kormosathi.app.viewmodel.JobViewModel
+import com.kormosathi.app.viewmodel.BookingViewModel
+import com.kormosathi.app.viewmodel.ServiceViewModel
 
 @Composable
-fun JobDetailsScreen(
+fun ServiceDetailsScreen(
     navController: NavHostController,
-    jobId: String
+    ServiceId: String
 ) {
-    val jobViewModel: JobViewModel = viewModel()
-    val applicationViewModel: ApplicationViewModel = viewModel()
-    val jobUiState by jobViewModel.uiState.collectAsState()
-    val appUiState by applicationViewModel.uiState.collectAsState()
+    val ServiceViewModel: ServiceViewModel = viewModel()
+    val BookingViewModel: BookingViewModel = viewModel()
+    val ServiceUiState by ServiceViewModel.uiState.collectAsState()
+    val appUiState by BookingViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        jobViewModel.getJobDetails(jobId)
-        applicationViewModel.checkIfApplied(jobId)
+        ServiceViewModel.getServiceDetails(ServiceId)
+        BookingViewModel.checkIfApplied(ServiceId)
     }
 
     Column(
@@ -70,7 +70,7 @@ fun JobDetailsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (jobUiState.isLoading) {
+        if (ServiceUiState.isLoading) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -78,15 +78,15 @@ fun JobDetailsScreen(
             ) {
                 CircularProgressIndicator()
             }
-        } else if (jobUiState.selectedJob != null) {
-            val job = jobUiState.selectedJob!!
+        } else if (ServiceUiState.selectedService != null) {
+            val Service = ServiceUiState.selectedService!!
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                JobDetailsContent(job, appUiState.hasApplied) {
-                    navController.navigate(Screen.ApplyJob.createRoute(jobId))
+                ServiceDetailsContent(Service, appUiState.hasApplied) {
+                    navController.navigate(Screen.ApplyService.createRoute(ServiceId))
                 }
             }
         } else {
@@ -102,27 +102,27 @@ fun JobDetailsScreen(
 }
 
 @Composable
-private fun JobDetailsContent(
-    job: Job,
+private fun ServiceDetailsContent(
+    service: Service,
     hasApplied: Boolean,
     onApplyClick: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = job.title,
+            text = service.title,
             style = MaterialTheme.typography.headlineMedium
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Job Info Grid
+        // Service Info Grid
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            InfoRow("ক্যাটাগরি:", job.category)
-            InfoRow("জেলা:", job.district)
-            InfoRow("ব্লক:", job.block)
-            InfoRow("বেতন:", "₹${job.salary}/দিন")
-            InfoRow("নিয়োগকর্তা:", job.employerName)
-            InfoRow("ফোন:", job.phone)
+            InfoRow("ক্যাটাগরি:", service.category)
+            InfoRow("জেলা:", service.district)
+            InfoRow("ব্লক:", service.block)
+            InfoRow("বেতন:", "₹${service.salary}/দিন")
+            InfoRow("নিয়োগকর্তা:", service.ProviderName)
+            InfoRow("ফোন:", service.phone)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -135,7 +135,7 @@ private fun JobDetailsContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = job.description,
+            text = service.description,
             style = MaterialTheme.typography.bodyMedium
         )
 

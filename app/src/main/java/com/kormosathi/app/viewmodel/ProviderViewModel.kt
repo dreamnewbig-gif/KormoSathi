@@ -2,78 +2,78 @@ package com.kormosathi.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kormosathi.app.model.Employer
-import com.kormosathi.app.model.Job
-import com.kormosathi.app.model.JobApplication
-import com.kormosathi.app.repository.EmployerRepository
+import com.kormosathi.app.model.Provider
+import com.kormosathi.app.model.Service
+import com.kormosathi.app.model.Booking
+import com.kormosathi.app.repository.ProviderRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class EmployerUiState(
+data class ProviderUiState(
     val isLoading: Boolean = false,
-    val employer: Employer? = null,
-    val jobs: List<Job> = emptyList(),
-    val applicants: List<JobApplication> = emptyList(),
+    val provider: Provider? = null,
+    val services: List<Service> = emptyList(),
+    val applicants: List<Booking> = emptyList(),
     val isSuccess: Boolean = false,
     val errorMessage: String = ""
 )
 
-class EmployerViewModel : ViewModel() {
+class ProviderViewModel : ViewModel() {
 
-    private val repository = EmployerRepository()
+    private val repository = ProviderRepository()
 
-    private val _uiState = MutableStateFlow(EmployerUiState())
-    val uiState: StateFlow<EmployerUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ProviderUiState())
+    val uiState: StateFlow<ProviderUiState> = _uiState.asStateFlow()
 
     init {
-        loadEmployerProfile()
+        loadProviderProfile()
     }
 
-    private fun loadEmployerProfile() {
+    private fun loadProviderProfile() {
         viewModelScope.launch {
-            _uiState.value = EmployerUiState(isLoading = true)
+            _uiState.value = ProviderUiState(isLoading = true)
 
-            val employer = repository.getEmployerProfile()
-            if (employer != null) {
-                _uiState.value = EmployerUiState(
+            val Provider = repository.getProviderProfile()
+            if (Provider != null) {
+                _uiState.value = ProviderUiState(
                     isLoading = false,
-                    employer = employer
+                    provider = Provider
                 )
-                loadEmployerJobs()
+                loadProviderServices()
             } else {
-                _uiState.value = EmployerUiState(
+                _uiState.value = ProviderUiState(
                     isLoading = false,
-                    errorMessage = "Employer profile not found"
+                    errorMessage = "Provider profile not found"
                 )
             }
         }
     }
 
-    fun createEmployerProfile(employer: Employer) {
+    fun createProviderProfile(provider: Provider) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            repository.createEmployerProfile(employer)
+            repository.createProviderProfile(provider)
                 .onSuccess {
-                    _uiState.value = EmployerUiState(
+                    _uiState.value = ProviderUiState(
                         isLoading = false,
                         isSuccess = true,
-                        employer = employer
+                        provider = provider
                     )
-                    loadEmployerJobs()
+                    loadProviderServices()
                 }
                 .onFailure { exception ->
-                    _uiState.value = EmployerUiState(
+                    _uiState.value = ProviderUiState(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Failed to create employer profile"
+                        errorMessage = exception.message ?: "Failed to create Provider profile"
                     )
                 }
         }
     }
 
-    fun postJob(
+    fun postService(
         title: String,
         description: String,
         category: String,
@@ -84,55 +84,55 @@ class EmployerViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val job = Job(
-                jobId = "",
+            val service = Service(
+                ServiceId = "",
                 title = title,
                 description = description,
                 category = category,
                 district = district,
                 block = block,
                 salary = salary.toString(),
-                employerUid = _uiState.value.employer?.uid ?: "",
-                employerName = _uiState.value.employer?.companyName ?: "",
-                phone = _uiState.value.employer?.phone ?: "",
+                ProviderUid = _uiState.value.provider?.uid ?: "",
+                ProviderName = _uiState.value.provider?.companyName ?: "",
+                phone = _uiState.value.provider?.phone ?: "",
                 createdAt = System.currentTimeMillis(),
                 status = "active"
             )
 
-            repository.postJob(job)
+            repository.postService(service)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true, isLoading = false)
-                    loadEmployerJobs()
+                    loadProviderServices()
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Failed to post job"
+                        errorMessage = exception.message ?: "Failed to post Service"
                     )
                 }
         }
     }
 
-    fun postJob(job: Job) {
+    fun postService(service: Service) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            repository.postJob(job)
+            repository.postService(service)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true, isLoading = false)
-                    loadEmployerJobs()
+                    loadProviderServices()
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Failed to post job"
+                        errorMessage = exception.message ?: "Failed to post Service"
                     )
                 }
         }
     }
 
-    fun updateJob(
-        jobId: String,
+    fun updateService(
+        ServiceId: String,
         title: String,
         description: String,
         category: String,
@@ -143,91 +143,91 @@ class EmployerViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val existingJob = _uiState.value.jobs.find { it.jobId == jobId }
-            val job = existingJob?.copy(
+            val existingService = _uiState.value.services.find { it.ServiceId == ServiceId }
+            val service = existingService?.copy(
                 title = title,
                 description = description,
                 category = category,
                 district = district,
                 block = block,
                 salary = salary.toString()
-            ) ?: Job(
-                jobId = jobId,
+            ) ?: Service(
+                ServiceId = ServiceId,
                 title = title,
                 description = description,
                 category = category,
                 district = district,
                 block = block,
                 salary = salary.toString(),
-                employerUid = _uiState.value.employer?.uid ?: "",
-                employerName = _uiState.value.employer?.companyName ?: "",
-                phone = _uiState.value.employer?.phone ?: "",
+                ProviderUid = _uiState.value.provider?.uid ?: "",
+                ProviderName = _uiState.value.provider?.companyName ?: "",
+                phone = _uiState.value.provider?.phone ?: "",
                 createdAt = System.currentTimeMillis(),
                 status = "active"
             )
 
-            repository.editJob(job)
+            repository.editService(service)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true, isLoading = false)
-                    loadEmployerJobs()
+                    loadProviderServices()
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Failed to edit job"
+                        errorMessage = exception.message ?: "Failed to edit Service"
                     )
                 }
         }
     }
 
-    fun editJob(job: Job) {
+    fun editService(service: Service) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            repository.editJob(job)
+            repository.editService(service)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true, isLoading = false)
-                    loadEmployerJobs()
+                    loadProviderServices()
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Failed to edit job"
+                        errorMessage = exception.message ?: "Failed to edit Service"
                     )
                 }
         }
     }
 
-    fun deleteJob(jobId: String) {
+    fun deleteService(ServiceId: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            repository.deleteJob(jobId)
+            repository.deleteService(ServiceId)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true, isLoading = false)
-                    loadEmployerJobs()
+                    loadProviderServices()
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Failed to delete job"
+                        errorMessage = exception.message ?: "Failed to delete Service"
                     )
                 }
         }
     }
 
-    private fun loadEmployerJobs() {
+    private fun loadProviderServices() {
         viewModelScope.launch {
-            val jobs = repository.getEmployerJobs()
-            _uiState.value = _uiState.value.copy(jobs = jobs)
+            val Services = repository.getProviderServices()
+            _uiState.value = _uiState.value.copy(services = Services)
         }
     }
 
-    fun getApplicants(jobId: String) {
+    fun getApplicants(ServiceId: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val applicants = repository.getJobApplicants(jobId)
+            val applicants = repository.getServiceApplicants(ServiceId)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 applicants = applicants
@@ -235,11 +235,11 @@ class EmployerViewModel : ViewModel() {
         }
     }
 
-    fun loadJobApplicants(jobId: String) {
+    fun loadServiceApplicants(ServiceId: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val applicants = repository.getJobApplicants(jobId)
+            val applicants = repository.getServiceApplicants(ServiceId)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 applicants = applicants
@@ -247,12 +247,12 @@ class EmployerViewModel : ViewModel() {
         }
     }
 
-    fun acceptApplicant(jobId: String, applicationId: String) {
+    fun acceptApplicant(ServiceId: String, BookingId: String) {
         viewModelScope.launch {
-            repository.acceptApplicant(applicationId)
+            repository.acceptApplicant(BookingId)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true)
-                    getApplicants(jobId)
+                    getApplicants(ServiceId)
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
@@ -262,12 +262,12 @@ class EmployerViewModel : ViewModel() {
         }
     }
 
-    fun rejectApplicant(jobId: String, applicationId: String) {
+    fun rejectApplicant(ServiceId: String, BookingId: String) {
         viewModelScope.launch {
-            repository.rejectApplicant(applicationId)
+            repository.rejectApplicant(BookingId)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(isSuccess = true)
-                    getApplicants(jobId)
+                    getApplicants(ServiceId)
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(

@@ -28,19 +28,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.model.JobApplication
-import com.kormosathi.app.viewmodel.ApplicationViewModel
+import com.kormosathi.app.model.Booking
+import com.kormosathi.app.viewmodel.BookingViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
-fun MyApplicationsScreen(navController: NavHostController) {
-    val applicationViewModel: ApplicationViewModel = viewModel()
-    val uiState by applicationViewModel.uiState.collectAsState()
+fun MyBookingsScreen(navController: NavHostController) {
+    val BookingViewModel: BookingViewModel = viewModel()
+    val uiState by BookingViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        applicationViewModel.loadMyApplications()
+        BookingViewModel.loadMyBookings()
     }
 
     Column(
@@ -73,7 +73,7 @@ fun MyApplicationsScreen(navController: NavHostController) {
             ) {
                 CircularProgressIndicator()
             }
-        } else if (uiState.applications.isEmpty()) {
+        } else if (uiState.Bookings.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -85,8 +85,8 @@ fun MyApplicationsScreen(navController: NavHostController) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(uiState.applications) { application ->
-                    ApplicationCard(application)
+                items(uiState.Bookings) { Booking ->
+                    BookingCard(Booking)
                 }
             }
         }
@@ -94,7 +94,7 @@ fun MyApplicationsScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun ApplicationCard(application: JobApplication) {
+private fun BookingCard(Booking: Booking) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,22 +110,22 @@ private fun ApplicationCard(application: JobApplication) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "চাকরি ID: ${application.jobId.take(8)}...",
+                    text = "চাকরি ID: ${Booking.ServiceId.take(8)}...",
                     style = MaterialTheme.typography.bodySmall
                 )
 
-                val statusColor = when (application.status) {
+                val statusColor = when (Booking.status) {
                     "accepted" -> Color(0xFF4CAF50)
                     "rejected" -> Color(0xFFf44336)
                     else -> Color(0xFF2196F3)
                 }
 
                 Text(
-                    text = when (application.status) {
+                    text = when (Booking.status) {
                         "pending" -> "অপেক্ষমাণ"
                         "accepted" -> "গ্রহণ করা হয়েছে"
                         "rejected" -> "প্রত্যাখ্যান করা হয়েছে"
-                        else -> application.status
+                        else -> Booking.status
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = statusColor
@@ -135,14 +135,14 @@ private fun ApplicationCard(application: JobApplication) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "আবেদন করা হয়েছে: ${formatDate(application.appliedAt)}",
+                text = "আবেদন করা হয়েছে: ${formatDate(Booking.appliedAt)}",
                 style = MaterialTheme.typography.bodySmall
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "ফোন: ${application.phone}",
+                text = "ফোন: ${Booking.phone}",
                 style = MaterialTheme.typography.bodySmall
             )
         }

@@ -15,7 +15,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -34,13 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.viewmodel.EmployerViewModel
+import com.kormosathi.app.viewmodel.ProviderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostJobScreen(navController: NavHostController) {
-    val employerViewModel: EmployerViewModel = viewModel()
-    val uiState by employerViewModel.uiState.collectAsState()
+fun PostServiceScreen(navController: NavHostController) {
+    val ProviderViewModel: ProviderViewModel = viewModel()
+    val uiState by ProviderViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var title by remember { mutableStateOf("") }
@@ -53,7 +52,7 @@ fun PostJobScreen(navController: NavHostController) {
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             snackbarHostState.showSnackbar("চাকরি সফলভাবে পোস্ট করা হয়েছে")
-            employerViewModel.clearSuccess()
+            ProviderViewModel.clearSuccess()
             navController.popBackStack()
         }
     }
@@ -61,7 +60,7 @@ fun PostJobScreen(navController: NavHostController) {
     LaunchedEffect(uiState.errorMessage) {
         if (uiState.errorMessage.isNotEmpty()) {
             snackbarHostState.showSnackbar(uiState.errorMessage)
-            employerViewModel.clearError()
+            ProviderViewModel.clearError()
         }
     }
 
@@ -165,7 +164,7 @@ fun PostJobScreen(navController: NavHostController) {
                             if (title.isNotBlank() && description.isNotBlank() && 
                                 category.isNotBlank() && district.isNotBlank() && 
                                 block.isNotBlank() && salary.isNotBlank()) {
-                                employerViewModel.postJob(
+                                ProviderViewModel.postService(
                                     title = title,
                                     description = description,
                                     category = category,

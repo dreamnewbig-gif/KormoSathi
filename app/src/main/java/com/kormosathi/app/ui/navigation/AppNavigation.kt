@@ -5,18 +5,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.kormosathi.app.ui.screens.ApplyJobScreen
-import com.kormosathi.app.ui.screens.EditJobScreen
-import com.kormosathi.app.ui.screens.EmployerDashboardScreen
+import com.kormosathi.app.ui.screens.ApplyServiceScreen
+import com.kormosathi.app.ui.screens.EditServiceScreen
+import com.kormosathi.app.ui.screens.ProviderDashboardScreen
 import com.kormosathi.app.ui.screens.HomeScreen
-import com.kormosathi.app.ui.screens.JobDetailsScreen
-import com.kormosathi.app.ui.screens.JobListScreen
+import com.kormosathi.app.ui.screens.ServiceDetailsScreen
+import com.kormosathi.app.ui.screens.ServiceListScreen
 import com.kormosathi.app.ui.screens.LoginScreen
-import com.kormosathi.app.ui.screens.MyApplicationsScreen
+import com.kormosathi.app.ui.screens.MyBookingsScreen
 import com.kormosathi.app.ui.screens.OtpScreen
-import com.kormosathi.app.ui.screens.PostJobScreen
+import com.kormosathi.app.ui.screens.PostServiceScreen
 import com.kormosathi.app.ui.screens.ProfileSetupScreen
-import com.kormosathi.app.ui.screens.SavedJobsScreen
+import com.kormosathi.app.ui.screens.SavedServicesScreen
 import com.kormosathi.app.ui.screens.SplashScreen
 import com.kormosathi.app.ui.screens.ViewApplicantsScreen
 import com.kormosathi.app.ui.screens.WelcomeScreen
@@ -55,44 +55,44 @@ fun AppNavigation() {
             HomeScreen(navController, authViewModel)
         }
 
-        composable(Screen.JobList.route) {
-            JobListScreen(navController)
+        composable(Screen.ServiceList.route) {
+            ServiceListScreen(navController)
         }
 
-        composable(Screen.JobDetails.route) { backStackEntry ->
-            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
-            JobDetailsScreen(navController, jobId)
+        composable(Screen.ServiceDetails.route) { backStackEntry ->
+            val ServiceId = backStackEntry.arguments?.getString("ServiceId") ?: ""
+            ServiceDetailsScreen(navController, ServiceId)
         }
 
-        composable(Screen.ApplyJob.route) { backStackEntry ->
-            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
-            ApplyJobScreen(navController, jobId)
+        composable(Screen.ApplyService.route) { backStackEntry ->
+            val ServiceId = backStackEntry.arguments?.getString("ServiceId") ?: ""
+            ApplyServiceScreen(navController, ServiceId)
         }
 
-        composable(Screen.MyApplications.route) {
-            MyApplicationsScreen(navController)
+        composable(Screen.MyBookings.route) {
+            MyBookingsScreen(navController)
         }
 
-        composable(Screen.EmployerDashboard.route) {
-            EmployerDashboardScreen(navController)
+        composable(Screen.ProviderDashboard.route) {
+            ProviderDashboardScreen(navController)
         }
 
-        composable(Screen.PostJob.route) {
-            PostJobScreen(navController)
+        composable(Screen.PostService.route) {
+            PostServiceScreen(navController)
         }
 
-        composable(Screen.EditJob.route) { backStackEntry ->
-            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
-            EditJobScreen(navController, jobId)
+        composable(Screen.EditService.route) { backStackEntry ->
+            val ServiceId = backStackEntry.arguments?.getString("ServiceId") ?: ""
+            EditServiceScreen(navController, ServiceId)
         }
 
         composable(Screen.ViewApplicants.route) { backStackEntry ->
-            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
-            ViewApplicantsScreen(navController, jobId)
+            val ServiceId = backStackEntry.arguments?.getString("ServiceId") ?: ""
+            ViewApplicantsScreen(navController, ServiceId)
         }
 
-        composable(Screen.SavedJobs.route) {
-            SavedJobsScreen(navController)
+        composable(Screen.SavedServices.route) {
+            SavedServicesScreen(navController)
         }
     }
 }
