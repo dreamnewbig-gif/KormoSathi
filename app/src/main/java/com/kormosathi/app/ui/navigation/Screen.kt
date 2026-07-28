@@ -1,37 +1,56 @@
 package com.kormosathi.app.ui.navigation
 
 sealed class Screen(val route: String) {
+
     object Splash : Screen("splash")
     object Welcome : Screen("welcome")
     object Login : Screen("login")
     object Otp : Screen("otp")
-    object ProfileSetup : Screen("profile_setup")
-    object Home : Screen("home")
-    object ServiceList : Screen("Service_list")
-    object ServiceDetails : Screen("Service_details/{ServiceId}") {
-        fun createRoute(ServiceId: String) = "Service_details/$ServiceId"
-    }
-    object ApplyService : Screen("apply_Service/{ServiceId}") {
-        fun createRoute(ServiceId: String) = "apply_Service/$ServiceId"
-    }
-    object MyBookings : Screen("my_Bookings")
-    
-    // Provider Routes
-    object ProviderDashboard : Screen("Provider_dashboard")
-    object PostService : Screen("post_Service")
-    object EditService : Screen("edit_Service/{ServiceId}") {
-        fun createRoute(ServiceId: String) = "edit_Service/$ServiceId"
-    }
-    object ViewApplicants : Screen("view_applicants/{ServiceId}") {
-        fun createRoute(ServiceId: String) = "view_applicants/$ServiceId"
-    }
-    
-    // Saved Services
-    object SavedServices : Screen("saved_Services")
 
-    object CustomerHome : Screen("customer_home")
-    object WorkerHome : Screen("worker_home")
+    object Home : Screen("home")
+
+    object Category : Screen("category")
+    object SubCategory : Screen("subcategory/{categoryId}") {
+        fun createRoute(categoryId: String) = "subcategory/$categoryId"
+    }
+
+    object ServiceList : Screen("services/{subCategoryId}") {
+        fun createRoute(subCategoryId: String) = "services/$subCategoryId"
+    }
+
+    object ServiceDetails : Screen("service_details/{serviceId}") {
+        fun createRoute(serviceId: String) = "service_details/$serviceId"
+    }
+
+    object Booking : Screen("booking/{serviceId}") {
+        fun createRoute(serviceId: String) = "booking/$serviceId"
+    }
+
+    object MyBookings : Screen("my_bookings")
+
+    object SavedServices : Screen("saved_services")
+
     object Profile : Screen("profile")
-    object EditProfile : Screen("edit_profile")
-    object Booking : Screen("booking")
+
+    object ProfileSetup : Screen("profile_setup")
+
+    object ProviderDashboard : Screen("provider_dashboard")
+
+    object PostService : Screen("post_service")
+
+    object EditService : Screen("edit_service/{serviceId}") {
+        fun createRoute(serviceId: String) = "edit_service/$serviceId"
+    }
+
+    object BookingRequests : Screen("booking_requests")
+
+    object AdminDashboard : Screen("admin_dashboard")
+
+    object ManageUsers : Screen("manage_users")
+
+    object ManageProviders : Screen("manage_providers")
+
+    object ManageBookings : Screen("manage_bookings")
+
+    object ManageCategories : Screen("manage_categories")
 }

@@ -67,13 +67,13 @@ fun HomeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
 
             Button(
                 onClick = {
-                    navController.navigate(Screen.ServiceList.route)
+                    navController.navigate(Screen.Category.route)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text("চাকরি খুঁজুন")
+                Text("সেবা খুঁজুন")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -86,7 +86,7 @@ fun HomeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text("আমার আবেদন")
+                Text("আমার বুকিং")
             }
 
             Spacer(modifier = Modifier.height(16.dp))

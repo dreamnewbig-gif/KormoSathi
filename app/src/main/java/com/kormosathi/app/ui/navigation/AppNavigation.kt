@@ -21,6 +21,8 @@ import com.kormosathi.app.ui.screens.SplashScreen
 import com.kormosathi.app.ui.screens.ViewApplicantsScreen
 import com.kormosathi.app.ui.screens.WelcomeScreen
 import com.kormosathi.app.viewmodel.AuthViewModel
+import com.kormosathi.app.ui.screens.CategoryScreen
+import com.kormosathi.app.ui.screens.SubCategoryScreen
 
 @Composable
 fun AppNavigation() {
@@ -93,6 +95,27 @@ fun AppNavigation() {
 
         composable(Screen.SavedServices.route) {
             SavedServicesScreen(navController)
+        }
+        composable(Screen.Category.route) {
+
+            CategoryScreen(
+                onCategoryClick = { categoryId ->
+
+                    navController.navigate("subcategory/$categoryId")
+
+                }
+            )
+
+        }
+        composable(Screen.SubCategory.route) { backStackEntry ->
+
+            val categoryId =
+                backStackEntry.arguments?.getString("categoryId") ?: ""
+
+            SubCategoryScreen(
+                categoryId = categoryId,
+                navController = navController
+            )
         }
     }
 }
