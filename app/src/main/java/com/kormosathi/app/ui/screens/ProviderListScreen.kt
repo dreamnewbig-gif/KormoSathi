@@ -4,115 +4,133 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.kormosathi.app.ui.navigation.Screen
 
-data class ProviderCard(
-    val name: String,
-    val profession: String,
-    val rating: Double,
-    val experience: String
-)
 
 @Composable
 fun ProviderListScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    serviceName: String
 ) {
+
 
     val providers = listOf(
 
-        ProviderCard(
-            "Rahul Das",
-            "Electrician",
-            4.9,
-            "8 Years"
-        ),
-
-        ProviderCard(
-            "Sanjib Roy",
-            "Electrician",
-            4.8,
-            "5 Years"
-        ),
-
-        ProviderCard(
-            "Bappa Mondal",
-            "Electrician",
-            4.7,
-            "10 Years"
-        )
+        "রাহুল ইলেকট্রিক সার্ভিস",
+        "সুমন টেকনিক্যাল সার্ভিস",
+        "বাবু কারিগর",
+        "মিঠুন সার্ভিস সেন্টার"
 
     )
 
-    LazyColumn(
+
+
+    Column(
+
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
 
-        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        items(providers) { provider ->
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
+        Text(
 
-                        navController.navigate(
-                            Screen.Booking.route
-                        )
+            text = serviceName,
 
-                    }
-            ) {
+            style = MaterialTheme.typography.headlineSmall
 
-                Row(
+        )
+
+
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+
+
+
+        LazyColumn(
+
+            verticalArrangement =
+                Arrangement.spacedBy(12.dp)
+
+        ) {
+
+
+
+            items(providers) { provider ->
+
+
+
+                Card(
+
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
 
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth()
+
+                        .clickable {
+
+
+                            // Next:
+                            // Provider Details
+
+
+                        },
+
+
+                    elevation =
+                        CardDefaults.cardElevation(4.dp)
+
                 ) {
 
-                    Icon(
-                        Icons.Default.Person,
-                        null,
-                        modifier = Modifier.size(48.dp)
-                    )
 
-                    Spacer(Modifier.width(16.dp))
 
                     Column(
-                        modifier = Modifier.weight(1f)
+
+                        modifier =
+                            Modifier.padding(18.dp)
+
                     ) {
 
+
+
                         Text(
-                            provider.name,
-                            fontWeight = FontWeight.Bold
+
+                            text = provider,
+
+                            style =
+                                MaterialTheme.typography.titleMedium
+
                         )
 
-                        Text(provider.profession)
 
-                        Text("⭐ ${provider.rating}")
+                        Text(
 
-                        Text(provider.experience)
+                            text = "⭐ 4.5 Rating",
+
+                            color =
+                                MaterialTheme.colorScheme.primary
+
+                        )
+
 
                     }
+
 
                 }
 
+
             }
+
 
         }
 
+
     }
+
 
 }

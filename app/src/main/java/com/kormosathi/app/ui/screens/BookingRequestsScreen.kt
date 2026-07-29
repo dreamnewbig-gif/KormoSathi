@@ -111,10 +111,10 @@ fun ViewApplicantsScreen(navController: NavHostController, ServiceId: String) {
                         ApplicantCard(
                             Booking = applicant,
                             onAccept = {
-                                ProviderViewModel.acceptApplicant(ServiceId, applicant.BookingId)
+                                ProviderViewModel.acceptApplicant(ServiceId, applicant.id)
                             },
                             onReject = {
-                                ProviderViewModel.rejectApplicant(ServiceId, applicant.BookingId)
+                                ProviderViewModel.rejectApplicant(ServiceId, applicant.id)
                             }
                         )
                     }

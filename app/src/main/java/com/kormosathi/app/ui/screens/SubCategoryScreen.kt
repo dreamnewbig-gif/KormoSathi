@@ -1,21 +1,17 @@
 package com.kormosathi.app.ui.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.kormosathi.app.ui.navigation.Screen
+
 
 @Composable
 fun SubCategoryScreen(
@@ -23,110 +19,220 @@ fun SubCategoryScreen(
     navController: NavHostController
 ) {
 
-    // Temporary data
-    val subCategories = when (categoryId) {
+
+    val subCategories = when(categoryId) {
+
 
         "home_services" -> listOf(
+
             "Electrician",
             "Plumber",
             "Carpenter",
             "Painter",
             "Mason",
             "Tiles Work"
+
         )
+
+
 
         "repair_installation" -> listOf(
+
+            "Fan Installation",
+            "Switch Repair",
+            "Light Installation",
             "AC Repair",
             "RO Repair",
-            "CCTV",
-            "Computer Repair",
-            "Home Appliances"
+            "Appliance Repair"
+
         )
 
+
+
+        "business" -> listOf(
+
+            "Graphic Design",
+            "Video Editing",
+            "Digital Marketing"
+
+        )
+
+
+
+        "vehicle" -> listOf(
+
+            "Car Repair",
+            "Bike Repair",
+            "Car Wash",
+            "Driver Service"
+
+        )
+
+
+
         "cleaning" -> listOf(
+
             "Home Cleaning",
             "Bathroom Cleaning",
             "Kitchen Cleaning",
             "Sofa Cleaning"
+
         )
 
-        "vehicle" -> listOf(
-            "Car Repair",
-            "Bike Repair",
-            "Car Wash",
-            "Driver"
-        )
+
 
         "personal" -> listOf(
-            "Beauty",
-            "Salon"
+
+            "Beauty Service",
+            "Salon",
+            "Makeup Artist"
+
         )
+
+
 
         "education" -> listOf(
-            "Tutor"
+
+            "Home Tutor",
+            "Online Tutor"
+
         )
 
-        "events" -> listOf(
-            "Photographer",
-            "Event Decoration"
-        )
 
-        "business" -> listOf(
-            "Graphic Designer",
-            "Video Editor",
-            "Digital Marketing"
-        )
 
         "health" -> listOf(
+
             "Blood Test",
             "Nurse",
             "Physiotherapy"
+
         )
 
-        "travel" -> listOf(
-            "Bus Booking"
-        )
 
-        "outdoor" -> listOf(
-            "Gardening",
-            "House Shifting"
-        )
 
         else -> emptyList()
+
+
     }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+
+
+
+
+    Column(
+
+        modifier = Modifier
+
+            .fillMaxSize()
+
+            .padding(16.dp)
+
     ) {
 
-        items(subCategories) { item ->
 
-            Card(
-                modifier = Modifier
-                    .clickable {
 
-                        navController.navigate(
-                            Screen.ServiceItems.createRoute(item)
-                        )
+        Text(
 
-                    },
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
+            text = "Sub Categories",
 
-                Text(
-                    text = item,
-                    modifier = Modifier.padding(20.dp),
-                    style = MaterialTheme.typography.titleMedium
-                )
+            style = MaterialTheme.typography.headlineSmall
+
+        )
+
+
+
+        Spacer(
+
+            modifier = Modifier.height(16.dp)
+
+        )
+
+
+
+
+
+        LazyVerticalGrid(
+
+            columns = GridCells.Fixed(2),
+
+
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+
+
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+
+
+        ) {
+
+
+
+            items(subCategories) { item ->
+
+
+
+
+                Card(
+
+
+                    modifier = Modifier
+
+                        .fillMaxWidth()
+
+                        .clickable {
+
+
+                            navController.navigate(
+
+                                Screen.ServiceItems.createRoute(
+
+                                    "$categoryId|$item"
+
+                                )
+
+                            )
+
+
+                        },
+
+
+                    elevation = CardDefaults.cardElevation(4.dp)
+
+
+                ) {
+
+
+
+                    Text(
+
+                        text = item,
+
+
+                        modifier = Modifier
+
+                            .padding(20.dp),
+
+
+                        style = MaterialTheme.typography.titleMedium
+
+
+                    )
+
+
+
+                }
+
+
 
             }
 
+
+
         }
 
+
+
     }
+
+
 
 }

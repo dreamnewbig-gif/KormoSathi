@@ -34,9 +34,14 @@ fun OtpScreen(navController: NavHostController, authViewModel: AuthViewModel) {
 
     LaunchedEffect(uiState.isAuthenticated) {
         if (uiState.isAuthenticated) {
+
             navController.navigate(Screen.Home.route) {
-                popUpTo(Screen.Otp.route) { inclusive = true }
-                popUpTo(Screen.Login.route) { inclusive = true }
+
+                popUpTo(Screen.Splash.route) {
+                    inclusive = true
+                }
+
+                launchSingleTop = true
             }
         }
     }

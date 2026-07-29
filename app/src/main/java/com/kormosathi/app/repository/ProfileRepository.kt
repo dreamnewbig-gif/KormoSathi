@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kormosathi.app.model.UserProfile
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.firestore.SetOptions
 
 class ProfileRepository {
 
@@ -32,7 +33,7 @@ class ProfileRepository {
 
             firestore.collection("users")
                 .document(uid)
-                .update(profileData)
+                .set(profileData, SetOptions.merge())
                 .await()
 
             Result.success(Unit)

@@ -23,76 +23,157 @@ class ServiceViewModel : ViewModel() {
 
     private val repository = ServiceRepository()
 
-    private val _uiState = MutableStateFlow(ServiceUiState())
-    val uiState: StateFlow<ServiceUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(
+        ServiceUiState()
+    )
+
+    val uiState: StateFlow<ServiceUiState> =
+        _uiState.asStateFlow()
 
     init {
         loadAllServices()
     }
 
     private fun loadAllServices() {
+
         viewModelScope.launch {
-            _uiState.value = ServiceUiState(isLoading = true)
-            val Services = repository.getAllServices()
-            _uiState.value = ServiceUiState(isLoading = false, services = Services)
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = ""
+            )
+
+            val services = repository.getAllServices()
+
+            _uiState.value = ServiceUiState(
+                isLoading = false,
+                services = services
+            )
         }
     }
 
-    fun searchServices(title: String, category: String, district: String) {
+    fun searchServices(
+        title: String,
+        category: String,
+        district: String
+    ) {
+
         viewModelScope.launch {
+
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
                 searchTitle = title,
                 searchCategory = category,
-                searchDistrict = district
+                searchDistrict = district,
+                errorMessage = ""
             )
 
-            val Services = repository.searchServices(title, category, district)
+            var services = repository.searchServices(
+                title
+            )
+
+            if (category.isNotBlank()) {
+
+                services = services.filter { service ->
+
+                    service.category.equals(
+                        category,
+                        ignoreCase = true
+                    )
+
+                }
+            }
+
+            if (district.isNotBlank()) {
+
+                services = services.filter { service ->
+
+                    service.district.equals(
+                        district,
+                        ignoreCase = true
+                    )
+
+                }
+            }
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                services = services
+            )
+        }
+    }
+
+    fun filterByDistrict(
+        district: String
+    ) {
+
+        viewModelScope.launch {
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                searchDistrict = district,
+                errorMessage = ""
+            )
+
+            val services = repository.filterByDistrict(
+                district
+            )
+
             _uiState.value = ServiceUiState(
                 isLoading = false,
-                services = Services,
-                searchTitle = title,
+                services = services,
+                searchDistrict = district
+            )
+        }
+    }
+
+    fun filterByCategory(
+        category: String
+    ) {
+
+        viewModelScope.launch {
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
                 searchCategory = category,
-                searchDistrict = district
+                errorMessage = ""
             )
-        }
-    }
 
-    fun filterByDistrict(district: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, searchDistrict = district)
+            val services = repository.filterByCategory(
+                category
+            )
 
-            val Services = repository.filterByDistrict(district)
             _uiState.value = ServiceUiState(
                 isLoading = false,
-                services = Services,
-                searchDistrict = district
-            )
-        }
-    }
-
-    fun filterByCategory(category: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, searchCategory = category)
-
-            val Services = repository.filterByCategory(category)
-            _uiState.value = ServiceUiState(
-                isLoading = false,
-                services = Services,
+                services = services,
                 searchCategory = category
             )
         }
     }
 
-    fun getServiceDetails(ServiceId: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+    fun getServiceDetails(
+        serviceId: String
+    ) {
 
-            val Service = repository.getServiceById(ServiceId)
+        viewModelScope.launch {
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = ""
+            )
+
+            val service = repository.getServiceById(
+                serviceId
+            )
+
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
-                selectedService = Service,
-                errorMessage = if (Service == null) "Service not found" else ""
+                selectedService = service,
+                errorMessage = if (service == null) {
+                    "Service not found"
+                } else {
+                    ""
+                }
             )
         }
     }
@@ -102,6 +183,9 @@ class ServiceViewModel : ViewModel() {
     }
 
     fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = "")
+
+        _uiState.value = _uiState.value.copy(
+            errorMessage = ""
+        )
     }
 }

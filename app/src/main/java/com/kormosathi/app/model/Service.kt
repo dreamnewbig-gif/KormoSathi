@@ -4,6 +4,30 @@ data class Service(
 
     val id: String = "",
 
+    val ServiceId: String = "",
+
+    val title: String = "",
+
+    val description: String = "",
+
+    val category: String = "",
+
+    val district: String = "",
+
+    val block: String = "",
+
+    val salary: String = "",
+
+    val ProviderUid: String = "",
+
+    val ProviderName: String = "",
+
+    val phone: String = "",
+
+    val createdAt: Long = 0L,
+
+    val status: String = "",
+
     val categoryId: String = "",
 
     val subCategoryId: String = "",

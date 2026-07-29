@@ -20,34 +20,71 @@ class ProviderServiceViewModel : ViewModel() {
 
     private val repository = ProviderServiceRepository()
 
-    private val _uiState = MutableStateFlow(ProviderServiceUiState())
-    val uiState: StateFlow<ProviderServiceUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(
+        ProviderServiceUiState()
+    )
 
-    fun loadProviderServices(providerId: String) {
+    val uiState: StateFlow<ProviderServiceUiState> =
+        _uiState.asStateFlow()
+
+    fun loadProviderServices(
+        providerId: String
+    ) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val list = repository.getProviderServices(providerId)
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                error = null
+            )
 
-            _uiState.value = ProviderServiceUiState(
+            val list = repository.getProviderServices(
+                providerId
+            )
+
+            _uiState.value = _uiState.value.copy(
                 services = list,
                 isLoading = false
             )
         }
     }
 
-    fun saveService(service: ProviderService) {
+    fun saveService(
+        service: ProviderService
+    ) {
         viewModelScope.launch {
 
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                success = false,
+                error = null
+            )
 
-            val result = repository.saveService(service)
+            val result = repository.addProviderService(
+                service
+            )
 
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
-                success = result,
-                error = if (result) null else "Failed to save service"
+                success = result.isSuccess,
+                error = result.exceptionOrNull()?.message
+                    ?: if (result.isFailure) {
+                        "Failed to save service"
+                    } else {
+                        null
+                    }
             )
         }
+    }
+
+    fun clearSuccess() {
+        _uiState.value = _uiState.value.copy(
+            success = false
+        )
+    }
+
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(
+            error = null
+        )
     }
 }

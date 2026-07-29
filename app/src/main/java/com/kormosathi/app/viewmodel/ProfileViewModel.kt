@@ -11,38 +11,99 @@ import kotlinx.coroutines.launch
 
 data class ProfileUiState(
     val isLoading: Boolean = false,
+    val profile: UserProfile? = null,
     val isSuccess: Boolean = false,
     val errorMessage: String = ""
 )
 
-class ProfileViewModel : ViewModel() {
-
-    private val repository = ProfileRepository()
+class ProfileViewModel(
+    private val repository: ProfileRepository = ProfileRepository()
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
-    val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
-    fun saveProfile(profile: UserProfile) {
+    val uiState: StateFlow<ProfileUiState> =
+        _uiState.asStateFlow()
+
+    fun loadProfile() {
 
         viewModelScope.launch {
 
-            _uiState.value = ProfileUiState(isLoading = true)
+            _uiState.value =
+                _uiState.value.copy(
+                    isLoading = true,
+                    errorMessage = ""
+                )
 
-            repository.saveProfile(profile)
+            try {
+
+                val profile =
+                    repository.getProfile()
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        isLoading = false,
+                        profile = profile,
+                        errorMessage =
+                            if (profile == null) {
+                                "Profile not found"
+                            } else {
+                                ""
+                            }
+                    )
+
+            } catch (e: Exception) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage =
+                            e.message
+                                ?: "Failed to load profile"
+                    )
+
+            }
+
+        }
+
+    }
+
+    fun saveProfile(
+        profile: UserProfile
+    ) {
+
+        viewModelScope.launch {
+
+            _uiState.value =
+                _uiState.value.copy(
+                    isLoading = true,
+                    isSuccess = false,
+                    errorMessage = ""
+                )
+
+            repository
+                .saveProfile(profile)
                 .onSuccess {
 
-                    _uiState.value = ProfileUiState(
-                        isLoading = false,
-                        isSuccess = true
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isLoading = false,
+                            profile = profile,
+                            isSuccess = true,
+                            errorMessage = ""
+                        )
 
                 }
-                .onFailure {
+                .onFailure { exception ->
 
-                    _uiState.value = ProfileUiState(
-                        isLoading = false,
-                        errorMessage = it.message ?: "Unknown error"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isLoading = false,
+                            isSuccess = false,
+                            errorMessage =
+                                exception.message
+                                    ?: "Failed to save profile"
+                        )
 
                 }
 
@@ -50,13 +111,21 @@ class ProfileViewModel : ViewModel() {
 
     }
 
-    fun loadProfile(onResult: (UserProfile?) -> Unit) {
+    fun clearSuccess() {
 
-        viewModelScope.launch {
+        _uiState.value =
+            _uiState.value.copy(
+                isSuccess = false
+            )
 
-            onResult(repository.getProfile())
+    }
 
-        }
+    fun clearError() {
+
+        _uiState.value =
+            _uiState.value.copy(
+                errorMessage = ""
+            )
 
     }
 

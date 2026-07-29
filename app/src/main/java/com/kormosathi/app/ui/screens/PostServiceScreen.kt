@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.kormosathi.app.viewmodel.ProviderViewModel
+import com.kormosathi.app.model.Service
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -165,12 +166,14 @@ fun PostServiceScreen(navController: NavHostController) {
                                 category.isNotBlank() && district.isNotBlank() && 
                                 block.isNotBlank() && salary.isNotBlank()) {
                                 ProviderViewModel.postService(
-                                    title = title,
-                                    description = description,
-                                    category = category,
-                                    district = district,
-                                    block = block,
-                                    salary = salary.toDoubleOrNull() ?: 0.0
+                                    service = Service(
+                                        title = title.trim(),
+                                        description = description.trim(),
+                                        category = category.trim(),
+                                        district = district.trim(),
+                                        block = block.trim(),
+                                        salary = salary.trim()
+                                    )
                                 )
                             } else {
                                 // Show validation error

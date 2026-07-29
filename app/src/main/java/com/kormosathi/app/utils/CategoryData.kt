@@ -107,4 +107,212 @@ object CategoryData {
 
     )
 
+
+    val subCategories = mapOf(
+
+        "home_services" to listOf(
+            "Electrician",
+            "Plumber",
+            "Carpenter",
+            "Painter",
+            "Mason"
+        ),
+
+        "repair_installation" to listOf(
+            "AC Repair",
+            "RO Repair",
+            "Computer Repair",
+            "Laptop Repair",
+            "CCTV"
+        ),
+
+        "cleaning" to listOf(
+            "Home Cleaning",
+            "Bathroom Cleaning",
+            "Kitchen Cleaning",
+            "Office Cleaning"
+        ),
+
+        "vehicle" to listOf(
+            "Car Repair",
+            "Bike Repair",
+            "Car Washing",
+            "Bike Washing"
+        ),
+
+        "personal" to listOf(
+            "Beauty Service",
+            "Salon Service",
+            "Massage Service"
+        ),
+
+        "education" to listOf(
+            "Home Tutor",
+            "Computer Tutor",
+            "Music Teacher"
+        ),
+
+        "events" to listOf(
+            "Photographer",
+            "Videographer",
+            "Event Decoration",
+            "Catering"
+        ),
+
+        "business" to listOf(
+            "Graphic Design",
+            "Web Design",
+            "Digital Marketing",
+            "Social Media Management"
+        ),
+
+        "health" to listOf(
+            "Nurse",
+            "Physiotherapist",
+            "Health Care Assistant"
+        ),
+
+        "travel" to listOf(
+            "Travel Guide",
+            "Tour Planning",
+            "Cab Service"
+        ),
+
+        "outdoor" to listOf(
+            "Gardening",
+            "Tree Cutting",
+            "Pest Control"
+        )
+
+    )
+
+
+    val services = mapOf(
+
+        "Electrician" to listOf(
+            "Fan Installation",
+            "Switch Repair",
+            "Light Installation",
+            "House Wiring",
+            "MCB Repair",
+            "Inverter Wiring"
+        ),
+
+        "Plumber" to listOf(
+            "Tap Repair",
+            "Pipe Repair",
+            "Bathroom Fitting",
+            "Water Tank Installation"
+        ),
+
+        "Carpenter" to listOf(
+            "Furniture Repair",
+            "Door Repair",
+            "Window Repair",
+            "Custom Furniture"
+        ),
+
+        "Painter" to listOf(
+            "House Painting",
+            "Wall Painting",
+            "Waterproofing"
+        ),
+
+        "Mason" to listOf(
+            "Brick Work",
+            "Plaster Work",
+            "Tiles Work"
+        ),
+
+        "AC Repair" to listOf(
+            "AC Installation",
+            "AC Repair",
+            "AC Gas Charging",
+            "AC Cleaning"
+        ),
+
+        "RO Repair" to listOf(
+            "RO Installation",
+            "RO Service",
+            "RO Filter Change"
+        ),
+
+        "Computer Repair" to listOf(
+            "Computer Formatting",
+            "Desktop Repair",
+            "Software Installation"
+        ),
+
+        "Laptop Repair" to listOf(
+            "Laptop Formatting",
+            "Laptop Screen Repair",
+            "Laptop Keyboard Repair"
+        ),
+
+        "CCTV" to listOf(
+            "CCTV Installation",
+            "CCTV Repair",
+            "CCTV Maintenance"
+        ),
+
+        "Graphic Design" to listOf(
+            "Banner Design",
+            "Poster Design",
+            "Logo Design",
+            "Visiting Card Design",
+            "Social Media Post Design"
+        ),
+
+        "Web Design" to listOf(
+            "Business Website",
+            "Portfolio Website",
+            "E-Commerce Website"
+        ),
+
+        "Digital Marketing" to listOf(
+            "Facebook Marketing",
+            "Google Ads",
+            "SEO Service"
+        ),
+
+        "Social Media Management" to listOf(
+            "Facebook Page Management",
+            "Instagram Management",
+            "Content Planning"
+        ),
+
+        "Photographer" to listOf(
+            "Wedding Photography",
+            "Event Photography",
+            "Product Photography"
+        ),
+
+        "Videographer" to listOf(
+            "Wedding Video",
+            "Event Video",
+            "Promotional Video"
+        )
+
+    )
+
+
+    fun getSubCategories(
+        categoryId: String
+    ): List<String> {
+
+        return subCategories[categoryId]
+            ?: emptyList()
+
+    }
+
+
+    fun getServices(
+        subCategory: String
+    ): List<String> {
+
+        return services[subCategory]
+            ?: emptyList()
+
+    }
+
 }

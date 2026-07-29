@@ -1,116 +1,33 @@
-package com.kormosathi.app.repository
+package com.kormosathi.app.model
 
-import com.google.firebase.firestore.FirebaseFirestore
-import com.kormosathi.app.model.ProviderService
-import kotlinx.coroutines.tasks.await
+data class Booking(
 
-class ProviderServiceRepository {
+    val id: String = "",
 
-    privcate val db = FirebaseFirestore.getInstance()
+    val userId: String = "",
 
-    suspend fun addProviderService(
-        providerService: ProviderService
-    ): Result<Unit> {
+    val applicantName: String = "",
 
-        return try {
+    val phone: String = "",
 
-            db.collection("provider_services")
-                .document(providerService.id)
-                .set(providerService)
-                .await()
+    val providerId: String = "",
 
-            Result.success(Unit)
+    val serviceId: String = "",
 
-        } catch (e: Exception) {
+    val bookingDate: Long = 0L,
 
-            Result.failure(e)
+    val bookingTime: String = "",
 
-        }
+    val address: String = "",
 
-    }
+    val status: String = "Pending",
 
-    suspend fun updateProviderService(
-        providerService: ProviderService
-    ): Result<Unit> {
+    val totalAmount: Double = 0.0,
 
-        return try {
+    val notes: String = "",
 
-            db.collection("provider_services")
-                .document(providerService.id)
-                .set(providerService)
-                .await()
+    val appliedAt: Long = 0L,
 
-            Result.success(Unit)
+    val createdAt: Long = System.currentTimeMillis()
 
-        } catch (e: Exception) {
-
-            Result.failure(e)
-
-        }
-
-    }
-
-    suspend fun getProviderServices(
-        providerId: String
-    ): List<ProviderService> {
-
-        return try {
-
-            db.collection("provider_services")
-                .whereEqualTo("providerId", providerId)
-                .whereEqualTo("isActive", true)
-                .get()
-                .await()
-                .toObjects(ProviderService::class.java)
-
-        } catch (e: Exception) {
-
-            emptyList()
-
-        }
-
-    }
-
-    suspend fun getServiceProviders(
-        serviceId: String
-    ): List<ProviderService> {
-
-        return try {
-
-            db.collection("provider_services")
-                .whereEqualTo("serviceId", serviceId)
-                .whereEqualTo("isActive", true)
-                .get()
-                .await()
-                .toObjects(ProviderService::class.java)
-
-        } catch (e: Exception) {
-
-            emptyList()
-
-        }
-
-    }
-
-    suspend fun deleteProviderService(
-        id: String
-    ): Result<Unit> {
-
-        return try {
-
-            db.collection("provider_services")
-                .document(id)
-                .delete()
-                .await()
-
-            Result.success(Unit)
-
-        } catch (e: Exception) {
-
-            Result.failure(e)
-
-        }
-
-    }
-
-}
+)

@@ -19,8 +19,12 @@ class CategoryViewModel : ViewModel() {
 
     private val repository = CategoryRepository()
 
-    private val _uiState = MutableStateFlow(CategoryUiState())
-    val uiState: StateFlow<CategoryUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(
+        CategoryUiState()
+    )
+
+    val uiState: StateFlow<CategoryUiState> =
+        _uiState.asStateFlow()
 
     init {
         loadCategories()
@@ -37,18 +41,26 @@ class CategoryViewModel : ViewModel() {
 
             try {
 
-                val categories = repository.getCategories()
+                val categories =
+                    repository.getCategories()
 
                 _uiState.value = CategoryUiState(
                     isLoading = false,
-                    categories = categories
+                    categories = categories,
+                    error = if (categories.isEmpty()) {
+                        "কোনো category পাওয়া যায়নি"
+                    } else {
+                        null
+                    }
                 )
 
             } catch (e: Exception) {
 
                 _uiState.value = CategoryUiState(
                     isLoading = false,
+                    categories = emptyList(),
                     error = e.message
+                        ?: "Category load করা যায়নি"
                 )
 
             }

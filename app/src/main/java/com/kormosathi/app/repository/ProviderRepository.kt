@@ -4,79 +4,85 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.kormosathi.app.model.Provider
 import kotlinx.coroutines.tasks.await
 
+
 class ProviderRepository {
 
-    private val db = FirebaseFirestore.getInstance()
 
-    suspend fun createProvider(provider: Provider): Result<Unit> {
+    private val db =
+        FirebaseFirestore.getInstance()
+
+
+
+    suspend fun saveProvider(
+        provider: Provider
+    ): Result<Boolean> {
+
+
         return try {
+
+
             db.collection("providers")
                 .document(provider.id)
                 .set(provider)
                 .await()
 
-            Result.success(Unit)
+
+            Result.success(true)
+
+
+
         } catch (e: Exception) {
+
+
             Result.failure(e)
+
+
         }
+
+
     }
 
-    suspend fun updateProvider(provider: Provider): Result<Unit> {
-        return try {
-            db.collection("providers")
-                .document(provider.id)
-                .set(provider)
-                .await()
 
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
 
-    suspend fun getProvider(providerId: String): Provider? {
-        return try {
-            db.collection("providers")
-                .document(providerId)
-                .get()
-                .await()
-                .toObject(Provider::class.java)
-        } catch (e: Exception) {
-            null
-        }
-    }
+    suspend fun getProvidersByService(
+        serviceId: String
+    ): List<Provider> {
 
-    suspend fun getApprovedProviders(): List<Provider> {
+
         return try {
-            db.collection("providers")
-                .whereEqualTo("isApproved", true)
-                .whereEqualTo("isAvailable", true)
-                .get()
-                .await()
-                .toObjects(Provider::class.java)
+
+
+            val snapshot =
+                db.collection("providers")
+                    .whereArrayContains(
+                        "serviceItemIds",
+                        serviceId
+                    )
+                    .get()
+                    .await()
+
+
+
+            snapshot.documents.mapNotNull {
+
+                it.toObject(
+                    Provider::class.java
+                )
+
+            }
+
+
+
         } catch (e: Exception) {
+
+
             emptyList()
-        }
-    }
 
-    suspend fun updateAvailability(
-        providerId: String,
-        available: Boolean
-    ): Result<Unit> {
-
-        return try {
-
-            db.collection("providers")
-                .document(providerId)
-                .update("isAvailable", available)
-                .await()
-
-            Result.success(Unit)
-
-        } catch (e: Exception) {
-
-            Result.failure(e)
 
         }
+
+
     }
+
+
 }
