@@ -109,8 +109,9 @@ fun SubCategoryScreen(
                 modifier = Modifier
                     .clickable {
 
-                        // next screen later
-                        // Service List
+                        navController.navigate(
+                            Screen.ServiceItems.createRoute(item)
+                        )
 
                     },
                 elevation = CardDefaults.cardElevation(4.dp)

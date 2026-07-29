@@ -5,7 +5,7 @@ data class Category(
     val nameEn: String = "",
     val nameBn: String = "",
     val icon: String = "",
-    val imageUrl: String = "",
+    val banner: String = "",
     val order: Int = 0,
     val isActive: Boolean = true
 )

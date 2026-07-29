@@ -23,6 +23,12 @@ import com.kormosathi.app.ui.screens.WelcomeScreen
 import com.kormosathi.app.viewmodel.AuthViewModel
 import com.kormosathi.app.ui.screens.CategoryScreen
 import com.kormosathi.app.ui.screens.SubCategoryScreen
+import com.kormosathi.app.ui.screens.ServiceItemScreen
+import com.kormosathi.app.ui.screens.CategorySelectionScreen
+import com.kormosathi.app.ui.screens.SubCategorySelectionScreen
+import com.kormosathi.app.ui.screens.ServiceItemSelectionScreen
+import com.kormosathi.app.ui.screens.ProviderListScreen
+import com.kormosathi.app.ui.screens.ProviderRegistrationScreen
 
 @Composable
 fun AppNavigation() {
@@ -116,6 +122,31 @@ fun AppNavigation() {
                 categoryId = categoryId,
                 navController = navController
             )
+        }
+        composable(Screen.ServiceItems.route) { backStackEntry ->
+
+            val subCategoryId =
+                backStackEntry.arguments?.getString("subCategoryId") ?: ""
+
+            ServiceItemScreen(
+                subCategoryId = subCategoryId,
+                navController = navController
+            )
+        }
+        composable(Screen.ProviderRegistration.route) {
+            ProviderRegistrationScreen(navController)
+        }
+        composable(Screen.CategorySelection.route) {
+            CategorySelectionScreen(navController)
+        }
+        composable(Screen.SubCategorySelection.route) {
+            SubCategorySelectionScreen(navController)
+        }
+        composable(Screen.ServiceItemSelection.route) {
+            ServiceItemSelectionScreen(navController)
+        }
+        composable(Screen.ProviderList.route) {
+            ProviderListScreen(navController)
         }
     }
 }

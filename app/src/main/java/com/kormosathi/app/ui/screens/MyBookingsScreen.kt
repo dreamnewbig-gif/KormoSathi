@@ -1,155 +1,113 @@
 package com.kormosathi.app.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.model.Booking
-import com.kormosathi.app.viewmodel.BookingViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+
+data class BookingCardModel(
+    val service: String,
+    val provider: String,
+    val date: String,
+    val time: String,
+    val status: String
+)
 
 @Composable
-fun MyBookingsScreen(navController: NavHostController) {
-    val BookingViewModel: BookingViewModel = viewModel()
-    val uiState by BookingViewModel.uiState.collectAsState()
+fun MyBookingsScreen(
+    navController: NavHostController
+) {
 
-    LaunchedEffect(Unit) {
-        BookingViewModel.loadMyBookings()
-    }
+    val bookings = listOf(
 
-    Column(
+        BookingCardModel(
+            "AC Repair",
+            "Rahul Das",
+            "21 Jul 2026",
+            "10:00 AM",
+            "Pending"
+        ),
+
+        BookingCardModel(
+            "RO Service",
+            "Sanjib Roy",
+            "19 Jul 2026",
+            "2:30 PM",
+            "Accepted"
+        ),
+
+        BookingCardModel(
+            "Electrician",
+            "Bappa Mondal",
+            "17 Jul 2026",
+            "4:00 PM",
+            "Completed"
+        )
+
+    )
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Header
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-            }
 
-            Text(
-                text = "আমার আবেদন",
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
+        items(bookings) { booking ->
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (uiState.isLoading) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            Card(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                CircularProgressIndicator()
-            }
-        } else if (uiState.Bookings.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("কোন আবেদন পাওয়া যায়নি")
-            }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(uiState.Bookings) { Booking ->
-                    BookingCard(Booking)
-                }
-            }
-        }
-    }
-}
 
-@Composable
-private fun BookingCard(Booking: Booking) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "চাকরি ID: ${Booking.ServiceId.take(8)}...",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
 
-                val statusColor = when (Booking.status) {
-                    "accepted" -> Color(0xFF4CAF50)
-                    "rejected" -> Color(0xFFf44336)
-                    else -> Color(0xFF2196F3)
+                    Text(
+                        booking.service,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(Modifier.height(6.dp))
+
+                    Text("Provider : ${booking.provider}")
+
+                    Text("Date : ${booking.date}")
+
+                    Text("Time : ${booking.time}")
+
+                    Spacer(Modifier.height(10.dp))
+
+                    AssistChip(
+                        onClick = {},
+                        label = {
+                            Text(booking.status)
+                        },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = when (booking.status) {
+                                "Pending" -> Color(0xFFFFF3CD)
+                                "Accepted" -> Color(0xFFD1E7DD)
+                                "Completed" -> Color(0xFFCCE5FF)
+                                "Cancelled" -> Color(0xFFF8D7DA)
+                                else -> MaterialTheme.colorScheme.surfaceVariant
+                            }
+                        )
+                    )
+
                 }
 
-                Text(
-                    text = when (Booking.status) {
-                        "pending" -> "অপেক্ষমাণ"
-                        "accepted" -> "গ্রহণ করা হয়েছে"
-                        "rejected" -> "প্রত্যাখ্যান করা হয়েছে"
-                        else -> Booking.status
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = statusColor
-                )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "আবেদন করা হয়েছে: ${formatDate(Booking.appliedAt)}",
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "ফোন: ${Booking.phone}",
-                style = MaterialTheme.typography.bodySmall
-            )
         }
-    }
-}
 
-private fun formatDate(timestamp: Long): String {
-    val sdf = SimpleDateFormat("dd MMM yyyy", Locale("bn", "BD"))
-    return sdf.format(Date(timestamp))
+    }
+
 }

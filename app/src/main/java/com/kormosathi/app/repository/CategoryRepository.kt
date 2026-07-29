@@ -6,11 +6,13 @@ import kotlinx.coroutines.tasks.await
 
 class CategoryRepository {
 
-    private val firestore = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     suspend fun getCategories(): List<Category> {
+
         return try {
-            firestore.collection("categories")
+
+            db.collection("categories")
                 .whereEqualTo("isActive", true)
                 .orderBy("order")
                 .get()
@@ -18,7 +20,11 @@ class CategoryRepository {
                 .toObjects(Category::class.java)
 
         } catch (e: Exception) {
+
             emptyList()
+
         }
+
     }
+
 }

@@ -8,7 +8,9 @@ class SubCategoryRepository {
 
     private val db = FirebaseFirestore.getInstance()
 
-    suspend fun getSubCategories(categoryId: String): List<SubCategory> {
+    suspend fun getSubCategories(
+        categoryId: String
+    ): List<SubCategory> {
 
         return try {
 
@@ -21,7 +23,9 @@ class SubCategoryRepository {
                 .toObjects(SubCategory::class.java)
 
         } catch (e: Exception) {
+
             emptyList()
+
         }
 
     }

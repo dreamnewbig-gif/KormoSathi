@@ -8,27 +8,109 @@ class ProviderServiceRepository {
 
     private val db = FirebaseFirestore.getInstance()
 
-    suspend fun saveService(service: ProviderService): Boolean {
+    suspend fun addProviderService(
+        providerService: ProviderService
+    ): Result<Unit> {
+
         return try {
+
             db.collection("provider_services")
-                .document(service.id)
-                .set(service)
+                .document(providerService.id)
+                .set(providerService)
                 .await()
-            true
+
+            Result.success(Unit)
+
         } catch (e: Exception) {
-            false
+
+            Result.failure(e)
+
         }
+
     }
 
-    suspend fun getProviderServices(providerId: String): List<ProviderService> {
+    suspend fun updateProviderService(
+        providerService: ProviderService
+    ): Result<Unit> {
+
         return try {
+
+            db.collection("provider_services")
+                .document(providerService.id)
+                .set(providerService)
+                .await()
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+
+        }
+
+    }
+
+    suspend fun getProviderServices(
+        providerId: String
+    ): List<ProviderService> {
+
+        return try {
+
             db.collection("provider_services")
                 .whereEqualTo("providerId", providerId)
+                .whereEqualTo("isActive", true)
                 .get()
                 .await()
                 .toObjects(ProviderService::class.java)
+
         } catch (e: Exception) {
+
             emptyList()
+
         }
+
     }
+
+    suspend fun getServiceProviders(
+        serviceId: String
+    ): List<ProviderService> {
+
+        return try {
+
+            db.collection("provider_services")
+                .whereEqualTo("serviceId", serviceId)
+                .whereEqualTo("isActive", true)
+                .get()
+                .await()
+                .toObjects(ProviderService::class.java)
+
+        } catch (e: Exception) {
+
+            emptyList()
+
+        }
+
+    }
+
+    suspend fun deleteProviderService(
+        id: String
+    ): Result<Unit> {
+
+        return try {
+
+            db.collection("provider_services")
+                .document(id)
+                .delete()
+                .await()
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+
+        }
+
+    }
+
 }

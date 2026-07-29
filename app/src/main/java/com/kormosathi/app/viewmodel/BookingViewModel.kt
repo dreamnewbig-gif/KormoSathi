@@ -6,72 +6,98 @@ import com.kormosathi.app.model.Booking
 import com.kormosathi.app.repository.BookingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-data class BookingUiState(
-    val isLoading: Boolean = false,
-    val Bookings: List<Booking> = emptyList(),
-    val isSuccess: Boolean = false,
-    val errorMessage: String = "",
-    val hasApplied: Boolean = false
-)
 
 class BookingViewModel : ViewModel() {
 
     private val repository = BookingRepository()
 
-    private val _uiState = MutableStateFlow(BookingUiState())
-    val uiState: StateFlow<BookingUiState> = _uiState.asStateFlow()
+    private val _customerBookings =
+        MutableStateFlow<List<Booking>>(emptyList())
+    val customerBookings: StateFlow<List<Booking>> =
+        _customerBookings
 
-    fun applyForService(
-        ServiceId: String,
-        applicantName: String,
-        phone: String
+    private val _providerBookings =
+        MutableStateFlow<List<Booking>>(emptyList())
+    val providerBookings: StateFlow<List<Booking>> =
+        _providerBookings
+
+    private val _loading =
+        MutableStateFlow(false)
+    val loading: StateFlow<Boolean> =
+        _loading
+
+    fun createBooking(
+        booking: Booking,
+        onResult: (Boolean) -> Unit
     ) {
+
         viewModelScope.launch {
-            _uiState.value = BookingUiState(isLoading = true)
 
-            repository.applyForService(ServiceId, applicantName, phone)
-                .onSuccess {
-                    _uiState.value = BookingUiState(
-                        isLoading = false,
-                        isSuccess = true
-                    )
-                }
-                .onFailure { exception ->
-                    _uiState.value = BookingUiState(
-                        isLoading = false,
-                        errorMessage = exception.message ?: "Failed to apply for Service"
-                    )
-                }
+            _loading.value = true
+
+            val result = repository.createBooking(booking)
+
+            _loading.value = false
+
+            onResult(result.isSuccess)
+
         }
+
     }
 
-    fun loadMyBookings() {
+    fun loadCustomerBookings(
+        customerId: String
+    ) {
+
         viewModelScope.launch {
-            _uiState.value = BookingUiState(isLoading = true)
 
-            val Bookings = repository.getMyBookings()
-            _uiState.value = BookingUiState(
-                isLoading = false,
-                Bookings = Bookings
-            )
+            _loading.value = true
+
+            _customerBookings.value =
+                repository.getCustomerBookings(customerId)
+
+            _loading.value = false
+
         }
+
     }
 
-    fun checkIfApplied(ServiceId: String) {
+    fun loadProviderBookings(
+        providerId: String
+    ) {
+
         viewModelScope.launch {
-            val hasApplied = repository.hasUserApplied(ServiceId)
-            _uiState.value = _uiState.value.copy(hasApplied = hasApplied)
+
+            _loading.value = true
+
+            _providerBookings.value =
+                repository.getProviderBookings(providerId)
+
+            _loading.value = false
+
         }
+
     }
 
-    fun clearSuccess() {
-        _uiState.value = _uiState.value.copy(isSuccess = false)
+    fun updateStatus(
+        bookingId: String,
+        status: String,
+        onResult: (Boolean) -> Unit
+    ) {
+
+        viewModelScope.launch {
+
+            val result =
+                repository.updateBookingStatus(
+                    bookingId,
+                    status
+                )
+
+            onResult(result.isSuccess)
+
+        }
+
     }
 
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = "")
-    }
 }

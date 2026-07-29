@@ -1,46 +1,70 @@
 package com.kormosathi.app.repository
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kormosathi.app.model.User
+import kotlinx.coroutines.tasks.await
 
 class UserRepository {
 
+    private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
-    fun saveUser(
-        user: User,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
+    suspend fun createUser(user: User): Result<Unit> {
 
-        val document = db.collection("users").document(user.uid)
+        return try {
 
-        document.get()
-            .addOnSuccessListener { snapshot ->
+            db.collection("users")
+                .document(user.id)
+                .set(user)
+                .await()
 
-                if (snapshot.exists()) {
+            Result.success(Unit)
 
-                    // User already exists.
-                    // Don't overwrite profileCompleted or profile data.
-                    onSuccess()
+        } catch (e: Exception) {
 
-                } else {
+            Result.failure(e)
 
-                    document
-                        .set(user)
-                        .addOnSuccessListener {
-                            onSuccess()
-                        }
-                        .addOnFailureListener { exception ->
-                            onFailure(exception)
-                        }
+        }
 
-                }
+    }
 
-            }
-            .addOnFailureListener { exception ->
-                onFailure(exception)
-            }
+    suspend fun getCurrentUser(): User? {
+
+        return try {
+
+            val uid = auth.currentUser?.uid ?: return null
+
+            db.collection("users")
+                .document(uid)
+                .get()
+                .await()
+                .toObject(User::class.java)
+
+        } catch (e: Exception) {
+
+            null
+
+        }
+
+    }
+
+    suspend fun updateUser(user: User): Result<Unit> {
+
+        return try {
+
+            db.collection("users")
+                .document(user.id)
+                .set(user)
+                .await()
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+
+        }
 
     }
 

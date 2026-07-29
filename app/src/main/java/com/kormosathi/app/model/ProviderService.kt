@@ -6,17 +6,16 @@ data class ProviderService(
 
     val providerId: String = "",
 
-    val categoryId: String = "",
-
-    val subCategoryId: String = "",
-
-    val serviceItemId: String = "",
-
-    val serviceNameEn: String = "",
-
-    val serviceNameBn: String = "",
+    val serviceId: String = "",
 
     val price: Double = 0.0,
 
-    val isAvailable: Boolean = true
+    val visitCharge: Double = 0.0,
+
+    val workingRadius: Int = 10,
+
+    val isActive: Boolean = true,
+
+    val createdAt: Long = 0L
+
 )

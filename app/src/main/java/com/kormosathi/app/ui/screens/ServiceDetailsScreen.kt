@@ -1,171 +1,124 @@
 package com.kormosathi.app.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.model.Service
 import com.kormosathi.app.ui.navigation.Screen
-import com.kormosathi.app.viewmodel.BookingViewModel
-import com.kormosathi.app.viewmodel.ServiceViewModel
 
 @Composable
 fun ServiceDetailsScreen(
     navController: NavHostController,
-    ServiceId: String
+    serviceId: String
 ) {
-    val ServiceViewModel: ServiceViewModel = viewModel()
-    val BookingViewModel: BookingViewModel = viewModel()
-    val ServiceUiState by ServiceViewModel.uiState.collectAsState()
-    val appUiState by BookingViewModel.uiState.collectAsState()
-
-    LaunchedEffect(Unit) {
-        ServiceViewModel.getServiceDetails(ServiceId)
-        BookingViewModel.checkIfApplied(ServiceId)
-    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        // Back Button
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-            }
-            Text(
-                text = "চাকরি বিবরণ",
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Spacer(modifier = Modifier.weight(1f))
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (ServiceUiState.isLoading) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (ServiceUiState.selectedService != null) {
-            val Service = ServiceUiState.selectedService!!
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                ServiceDetailsContent(Service, appUiState.hasApplied) {
-                    navController.navigate(Screen.ApplyService.createRoute(ServiceId))
-                }
-            }
-        } else {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("চাকরি খুঁজে পাওয়া যায়নি")
-            }
-        }
-    }
-}
-
-@Composable
-private fun ServiceDetailsContent(
-    service: Service,
-    hasApplied: Boolean,
-    onApplyClick: () -> Unit
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = service.title,
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Service Info Grid
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            InfoRow("ক্যাটাগরি:", service.category)
-            InfoRow("জেলা:", service.district)
-            InfoRow("ব্লক:", service.block)
-            InfoRow("বেতন:", "₹${service.salary}/দিন")
-            InfoRow("নিয়োগকর্তা:", service.ProviderName)
-            InfoRow("ফোন:", service.phone)
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "বর্ণনা",
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = service.description,
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = onApplyClick,
-            enabled = !hasApplied,
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(200.dp)
         ) {
-            Text(if (hasApplied) "ইতিমধ্যে আবেদন করা হয়েছে" else "এখনই আবেদন করুন")
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    "Service Banner",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         }
-    }
-}
 
-@Composable
-private fun InfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+        Spacer(Modifier.height(20.dp))
+
         Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium
+            "House Electrical Repair",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
         )
+
+        Spacer(Modifier.height(10.dp))
+
         Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium
+            "Professional electrician for home wiring, switch, fan, light, MCB, inverter and all electrical works."
         )
+
+        Spacer(Modifier.height(20.dp))
+
+        ElevatedCard(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+
+                Text("Starting Price")
+
+                Text(
+                    "₹299",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                Text("Estimated Duration")
+
+                Text("30 - 60 Minutes")
+
+                Spacer(Modifier.height(12.dp))
+
+                Text("Rating")
+
+                Text("⭐ 4.9 (245 Reviews)")
+
+            }
+
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        Text(
+            "What's Included",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(Modifier.height(10.dp))
+
+        Text("✔ Inspection")
+
+        Text("✔ Labour")
+
+        Text("✔ Safety Check")
+
+        Text("✔ Service Warranty")
+
+        Spacer(Modifier.height(30.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+
+                navController.navigate(Screen.ProviderList.route)
+
+            }
+        ) {
+
+            Text("Book Now")
+
+        }
+
     }
+
 }

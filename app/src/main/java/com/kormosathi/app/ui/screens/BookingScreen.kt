@@ -1,157 +1,137 @@
 package com.kormosathi.app.ui.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.kormosathi.app.repository.ProfileRepository
-import com.kormosathi.app.ui.navigation.Screen
-import com.kormosathi.app.viewmodel.BookingViewModel
 
 @Composable
-fun ApplyServiceScreen(
-    navController: NavHostController,
-    ServiceId: String
+fun BookingScreen(
+    navController: NavHostController
 ) {
-    val BookingViewModel: BookingViewModel = viewModel()
-    val appUiState by BookingViewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
 
-    var applicantName by remember { mutableStateOf("") }
+    var customerName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
-
-    // Load profile info
-    LaunchedEffect(Unit) {
-        try {
-            val profileRepository = ProfileRepository()
-            val profile = profileRepository.getProfile()
-            if (profile != null) {
-                applicantName = profile.name
-                phone = profile.phone
-            }
-        } catch (e: Exception) {
-            // Handle error silently
-        }
-    }
-
-    LaunchedEffect(appUiState.isSuccess) {
-        if (appUiState.isSuccess) {
-            snackbarHostState.showSnackbar("আপনি সফলভাবে চাকরির জন্য আবেদন করেছেন")
-            navController.navigate(Screen.ServiceList.route) {
-                popUpTo(Screen.ApplyService.route) { inclusive = true }
-            }
-        }
-    }
-
-    LaunchedEffect(appUiState.errorMessage) {
-        if (appUiState.errorMessage.isNotEmpty()) {
-            snackbarHostState.showSnackbar(appUiState.errorMessage)
-            BookingViewModel.clearError()
-        }
-    }
+    var address by remember { mutableStateOf("") }
+    var bookingDate by remember { mutableStateOf("") }
+    var bookingTime by remember { mutableStateOf("") }
+    var problem by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        // Header
-        IconButton(onClick = { navController.popBackStack() }) {
-            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-        }
 
         Text(
-            text = "চাকরির জন্য আবেদন করুন",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 24.dp)
+            "Book Service",
+            style = MaterialTheme.typography.headlineMedium
         )
 
-        // Form
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+        Spacer(Modifier.height(20.dp))
+
+        OutlinedTextField(
+            value = customerName,
+            onValueChange = { customerName = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Full Name") }
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = phone,
+            onValueChange = { phone = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Phone Number") }
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = address,
+            onValueChange = { address = it },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 3,
+            label = { Text("Service Address") }
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = bookingDate,
+            onValueChange = { bookingDate = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Preferred Date") }
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = bookingTime,
+            onValueChange = { bookingTime = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Preferred Time") }
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = problem,
+            onValueChange = { problem = it },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 5,
+            label = { Text("Describe Your Problem") }
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            OutlinedTextField(
-                value = applicantName,
-                onValueChange = { applicantName = it },
-                label = { Text("নাম") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp),
-                singleLine = true,
-                enabled = !appUiState.isLoading
-            )
-
-            OutlinedTextField(
-                value = phone,
-                onValueChange = { if (it.length <= 10 && it.all { ch -> ch.isDigit() }) phone = it },
-                label = { Text("ফোন নম্বর") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                singleLine = true,
-                enabled = !appUiState.isLoading
-            )
-
-            Button(
-                onClick = {
-                    if (validateForm(applicantName, phone)) {
-                        BookingViewModel.applyForService(
-                            ServiceId,
-                            applicantName,
-                            phone
-                        )
-                    }
-                },
-                enabled = !appUiState.isLoading && applicantName.isNotBlank() && phone.length == 10,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
-                if (appUiState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.padding(8.dp), strokeWidth = 2.dp)
-                } else {
-                    Text("আবেদন জমা করুন")
-                }
+
+                Text("Estimated Visit Charge")
+
+                Spacer(Modifier.height(6.dp))
+
+                Text(
+                    "₹299",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                Spacer(Modifier.height(6.dp))
+
+                Text(
+                    "Final amount may vary after inspection."
+                )
+
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            SnackbarHost(hostState = snackbarHostState)
         }
-    }
-}
 
-private fun validateForm(name: String, phone: String): Boolean {
-    return name.isNotBlank() && phone.length == 10 && phone.all { it.isDigit() }
+        Spacer(Modifier.height(24.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+
+                // TODO
+                // Save Booking to Firestore
+
+            }
+        ) {
+
+            Text("Confirm Booking")
+
+        }
+
+    }
+
 }

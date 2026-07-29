@@ -25,6 +25,10 @@ sealed class Screen(val route: String) {
     object Booking : Screen("booking/{serviceId}") {
         fun createRoute(serviceId: String) = "booking/$serviceId"
     }
+    object ServiceItems : Screen("service_items/{subCategoryId}") {
+        fun createRoute(subCategoryId: String) =
+            "service_items/$subCategoryId"
+    }
 
     object MyBookings : Screen("my_bookings")
 
@@ -35,6 +39,11 @@ sealed class Screen(val route: String) {
     object ProfileSetup : Screen("profile_setup")
 
     object ProviderDashboard : Screen("provider_dashboard")
+    object ProviderRegistration : Screen("provider_registration")
+    object CategorySelection : Screen("category_selection")
+    object SubCategorySelection : Screen("subcategory_selection")
+    object ServiceItemSelection : Screen("service_item_selection")
+    object ProviderList : Screen("provider_list")
 
     object PostService : Screen("post_service")
 

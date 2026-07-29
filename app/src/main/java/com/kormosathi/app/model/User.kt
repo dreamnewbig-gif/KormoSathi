@@ -1,12 +1,21 @@
 package com.kormosathi.app.model
 
 data class User(
-    val uid: String = "",
-    val phone: String = "",
-    val role: String = "customer",
+
+    val id: String = "",
+
     val name: String = "",
-    val district: String = "",
-    val area: String = "",
-    val createdAt: Long = System.currentTimeMillis(),
-    val profileCompleted: Boolean = false
+
+    val phone: String = "",
+
+    val email: String = "",
+
+    val photo: String = "",
+
+    val language: String = "bn",
+
+    val savedAddresses: List<String> = emptyList(),
+
+    val createdAt: Long = System.currentTimeMillis()
+
 )
