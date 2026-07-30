@@ -1,38 +1,85 @@
 package com.kormosathi.app.ui.screens
-import androidx.compose.material3.ExperimentalMaterial3Api
+
+import android.util.Patterns
+
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
+
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 import androidx.navigation.NavHostController
+
+import com.google.firebase.auth.FirebaseAuth
+
+import com.kormosathi.app.model.Provider
 import com.kormosathi.app.ui.navigation.Screen
+import com.kormosathi.app.viewmodel.ProviderViewModel
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProviderRegistrationScreen(
     navController: NavHostController
 ) {
+
+    val providerViewModel: ProviderViewModel = viewModel()
+
+    val providerUiState by providerViewModel
+        .uiState
+        .collectAsState()
+
+
+    LaunchedEffect(
+        providerUiState.isSuccess
+    ) {
+
+        if (providerUiState.isSuccess) {
+
+            navController.navigate(
+                Screen.ProviderDashboard.route
+            ) {
+
+                popUpTo(
+                    Screen.ProviderRegistration.route
+                ) {
+                    inclusive = true
+                }
+
+                launchSingleTop = true
+            }
+
+            providerViewModel.clearSuccess()
+        }
+    }
+
 
     var fullName by remember {
         mutableStateOf("")
@@ -58,23 +105,23 @@ fun ProviderRegistrationScreen(
         mutableStateOf("")
     }
 
-    var locality by remember {
+    var postOffice by remember {
+        mutableStateOf("")
+    }
+
+    var areaType by remember {
+        mutableStateOf("")
+    }
+
+    var villageOrLocality by remember {
+        mutableStateOf("")
+    }
+
+    var pincode by remember {
         mutableStateOf("")
     }
 
     var experience by remember {
-        mutableStateOf("")
-    }
-
-    var category by remember {
-        mutableStateOf("")
-    }
-
-    var subCategory by remember {
-        mutableStateOf("")
-    }
-
-    var service by remember {
         mutableStateOf("")
     }
 
@@ -94,1165 +141,1252 @@ fun ProviderRegistrationScreen(
         mutableStateOf("")
     }
 
-    var genderExpanded by remember {
-        mutableStateOf(false)
-    }
 
-    var districtExpanded by remember {
-        mutableStateOf(false)
-    }
+    /*
+     * Multiple selections
+     */
 
-    var policeStationExpanded by remember {
-        mutableStateOf(false)
-    }
+    val selectedCategories =
+        remember {
+            mutableStateListOf<String>()
+        }
 
-    var localityExpanded by remember {
-        mutableStateOf(false)
-    }
+    val selectedSubCategories =
+        remember {
+            mutableStateListOf<String>()
+        }
 
-    var experienceExpanded by remember {
-        mutableStateOf(false)
-    }
+    val selectedServices =
+        remember {
+            mutableStateListOf<String>()
+        }
 
-    var categoryExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    var subCategoryExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    var serviceExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    val genders = listOf(
-        "Male",
-        "Female",
-        "Other"
-    )
-
-    val districts = listOf(
-        "Purba Medinipur",
-        "Paschim Medinipur",
-        "Jhargram",
-        "Purulia",
-        "Bankura",
-        "Kolkata",
-        "Howrah",
-        "Hooghly",
-        "Nadia",
-        "Murshidabad",
-        "Other"
-    )
-
-    val policeStations = listOf(
-        "Select Police Station",
-        "Egra",
-        "Contai",
-        "Ramnagar",
-        "Bhupatinagar",
-        "Tamluk",
-        "Haldia",
-        "Kharagpur",
-        "Other"
-    )
-
-    val localities = listOf(
-        "Village",
-        "Ward / Municipality Area",
-        "Town",
-        "Other"
-    )
-
-    val experienceOptions = listOf(
-        "Fresher",
-        "1 Year",
-        "2 Years",
-        "3 Years",
-        "4 Years",
-        "5 Years",
-        "6-10 Years",
-        "More than 10 Years"
-    )
 
     val categories = listOf(
+
         "Home Services",
+
         "Repair & Installation",
+
         "Cleaning Services",
+
         "Vehicle Services",
+
         "Personal Services",
+
         "Education",
+
         "Events",
+
         "Business & Digital",
+
         "Health",
+
         "Travel",
+
         "Outdoor Services"
+
     )
 
-    val subCategories = when (category) {
 
-        "Home Services" -> listOf(
-            "Electrician",
-            "Plumber",
-            "Carpenter",
-            "Painter",
-            "Mason",
-            "Tiles Work",
-            "False Ceiling"
-        )
+    fun getSubCategories(
+        category: String
+    ): List<String> {
 
-        "Repair & Installation" -> listOf(
-            "AC Repair",
-            "AC Installation",
-            "RO Repair",
-            "Computer Repair",
-            "Laptop Repair",
-            "CCTV Installation",
-            "Appliance Repair"
-        )
+        return when (category) {
 
-        "Cleaning Services" -> listOf(
-            "Home Cleaning",
-            "Office Cleaning",
-            "Bathroom Cleaning",
-            "Kitchen Cleaning",
-            "Sofa Cleaning",
-            "Water Tank Cleaning"
-        )
+            "Home Services" -> listOf(
 
-        "Vehicle Services" -> listOf(
-            "Bike Repair",
-            "Car Repair",
-            "Car Washing",
-            "Bike Washing",
-            "Tyre Service",
-            "Battery Service"
-        )
+                "Electrician",
 
-        "Personal Services" -> listOf(
-            "Beauty Service",
-            "Salon Service",
-            "Makeup Artist",
-            "Massage Service",
-            "Personal Trainer"
-        )
+                "Plumber",
 
-        "Education" -> listOf(
-            "Home Tutor",
-            "Computer Training",
-            "Spoken English",
-            "Music Teacher",
-            "Dance Teacher"
-        )
+                "Carpenter",
 
-        "Events" -> listOf(
-            "Photographer",
-            "Videographer",
-            "Event Decoration",
-            "Catering",
-            "DJ Service",
-            "Event Planning"
-        )
+                "Painter",
 
-        "Business & Digital" -> listOf(
-            "Graphic Design",
-            "Web Development",
-            "Digital Marketing",
-            "Social Media Management",
-            "Printing Service",
-            "Logo Design"
-        )
+                "Mason",
 
-        "Health" -> listOf(
-            "Home Nursing",
-            "Physiotherapy",
-            "Doctor Consultation",
-            "Medical Assistance"
-        )
+                "Tiles Work",
 
-        "Travel" -> listOf(
-            "Car Rental",
-            "Taxi Service",
-            "Tour Guide",
-            "Travel Booking"
-        )
+                "False Ceiling"
 
-        "Outdoor Services" -> listOf(
-            "Gardening",
-            "Pest Control",
-            "Security Service",
-            "Outdoor Cleaning"
-        )
+            )
 
-        else -> emptyList()
+            "Repair & Installation" -> listOf(
 
+                "AC Repair",
+
+                "AC Installation",
+
+                "RO Repair",
+
+                "Computer Repair",
+
+                "Laptop Repair",
+
+                "CCTV Installation",
+
+                "Appliance Repair"
+
+            )
+
+            "Cleaning Services" -> listOf(
+
+                "Home Cleaning",
+
+                "Office Cleaning",
+
+                "Bathroom Cleaning",
+
+                "Kitchen Cleaning",
+
+                "Sofa Cleaning",
+
+                "Water Tank Cleaning"
+
+            )
+
+            "Vehicle Services" -> listOf(
+
+                "Bike Repair",
+
+                "Car Repair",
+
+                "Car Washing",
+
+                "Bike Washing",
+
+                "Tyre Service",
+
+                "Battery Service"
+
+            )
+
+            "Personal Services" -> listOf(
+
+                "Beauty Service",
+
+                "Salon Service",
+
+                "Makeup Artist",
+
+                "Massage Service",
+
+                "Personal Trainer"
+
+            )
+
+            "Education" -> listOf(
+
+                "Home Tutor",
+
+                "Computer Training",
+
+                "Spoken English",
+
+                "Music Teacher",
+
+                "Dance Teacher"
+
+            )
+
+            "Events" -> listOf(
+
+                "Photographer",
+
+                "Videographer",
+
+                "Event Decoration",
+
+                "Catering",
+
+                "DJ Service",
+
+                "Event Planning"
+
+            )
+
+            "Business & Digital" -> listOf(
+
+                "Graphic Design",
+
+                "Web Development",
+
+                "Digital Marketing",
+
+                "Social Media Management",
+
+                "Printing Service",
+
+                "Logo Design"
+
+            )
+
+            "Health" -> listOf(
+
+                "Home Nursing",
+
+                "Physiotherapy",
+
+                "Doctor Consultation",
+
+                "Medical Assistance"
+
+            )
+
+            "Travel" -> listOf(
+
+                "Car Rental",
+
+                "Taxi Service",
+
+                "Tour Guide",
+
+                "Travel Booking"
+
+            )
+
+            "Outdoor Services" -> listOf(
+
+                "Gardening",
+
+                "Pest Control",
+
+                "Security Service",
+
+                "Outdoor Cleaning"
+
+            )
+
+            else -> emptyList()
+        }
     }
 
-    val services = when (subCategory) {
 
-        "Electrician" -> listOf(
-            "Fan Installation",
-            "Switch Repair",
-            "Light Installation",
-            "House Wiring",
-            "MCB Repair",
-            "Inverter Wiring"
-        )
+    fun getServices(
+        subCategory: String
+    ): List<String> {
 
-        "Plumber" -> listOf(
-            "Tap Repair",
-            "Pipe Repair",
-            "Bathroom Fitting",
-            "Water Tank Installation",
-            "Drainage Repair"
-        )
+        return when (subCategory) {
 
-        "Carpenter" -> listOf(
-            "Door Repair",
-            "Window Repair",
-            "Furniture Repair",
-            "Wooden Furniture Making",
-            "Modular Furniture"
-        )
+            "Electrician" -> listOf(
 
-        "AC Repair" -> listOf(
-            "AC Repair",
-            "AC Service",
-            "AC Gas Charging",
-            "AC Installation"
-        )
+                "Fan Installation",
 
-        "Bike Repair" -> listOf(
-            "Bike General Service",
-            "Bike Engine Repair",
-            "Bike Brake Repair",
-            "Bike Electrical Repair"
-        )
+                "Switch Repair",
 
-        "Car Repair" -> listOf(
-            "Car General Service",
-            "Car Engine Repair",
-            "Car Brake Repair",
-            "Car Electrical Repair"
-        )
+                "Light Installation",
 
-        "Graphic Design" -> listOf(
-            "Logo Design",
-            "Banner Design",
-            "Visiting Card Design",
-            "Social Media Post Design",
-            "Flex Design",
-            "Wedding Card Design"
-        )
+                "House Wiring",
 
-        "Photographer" -> listOf(
-            "Wedding Photography",
-            "Birthday Photography",
-            "Event Photography",
-            "Product Photography"
-        )
+                "MCB Repair",
 
-        "Home Tutor" -> listOf(
-            "Primary Tuition",
-            "Secondary Tuition",
-            "Higher Secondary Tuition"
-        )
+                "Inverter Wiring"
 
-        else -> listOf(
-            "General Service"
-        )
+            )
 
+            "Plumber" -> listOf(
+
+                "Tap Repair",
+
+                "Pipe Repair",
+
+                "Bathroom Fitting",
+
+                "Water Tank Installation",
+
+                "Drainage Repair"
+
+            )
+
+            "Carpenter" -> listOf(
+
+                "Door Repair",
+
+                "Window Repair",
+
+                "Furniture Repair",
+
+                "Wooden Furniture Making",
+
+                "Modular Furniture"
+
+            )
+
+            "AC Repair" -> listOf(
+
+                "AC Repair",
+
+                "AC Service",
+
+                "AC Gas Charging",
+
+                "AC Installation"
+
+            )
+
+            "Graphic Design" -> listOf(
+
+                "Logo Design",
+
+                "Banner Design",
+
+                "Visiting Card Design",
+
+                "Social Media Post Design",
+
+                "Flex Design",
+
+                "Wedding Card Design"
+
+            )
+
+            "Photographer" -> listOf(
+
+                "Wedding Photography",
+
+                "Birthday Photography",
+
+                "Event Photography",
+
+                "Product Photography"
+
+            )
+
+            "Home Tutor" -> listOf(
+
+                "Primary Tuition",
+
+                "Secondary Tuition",
+
+                "Higher Secondary Tuition"
+
+            )
+
+            else -> listOf(
+
+                "General Service"
+            )
+        }
     }
+
+
+    val availableSubCategories =
+
+        selectedCategories
+            .flatMap {
+
+                getSubCategories(
+                    it
+                )
+
+            }
+            .distinct()
+
+
+    val availableServices =
+
+        selectedSubCategories
+            .flatMap {
+
+                getServices(
+                    it
+                )
+
+            }
+            .distinct()
+
 
     Column(
+
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(
                 rememberScrollState()
             )
             .padding(16.dp)
+
     ) {
 
+
         Text(
-            text = "Provider Registration",
+
+            text =
+                "Provider Registration",
+
             style =
                 MaterialTheme
                     .typography
                     .headlineMedium
+
         )
+
 
         Spacer(
             modifier =
-                Modifier.height(8.dp)
+                Modifier.height(16.dp)
         )
 
+
         Text(
+
             text =
-                "প্রোভাইডার হিসেবে রেজিস্ট্রেশন করতে নিচের তথ্যগুলো পূরণ করুন"
-        )
+                "Personal Details",
 
-        Spacer(
-            modifier =
-                Modifier.height(20.dp)
-        )
-
-        Text(
-            text = "Personal Details",
             style =
                 MaterialTheme
                     .typography
                     .titleLarge
+
         )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
+
         OutlinedTextField(
-            value = fullName,
+
+            value =
+                fullName,
+
             onValueChange = {
 
                 fullName = it
 
-                errorMessage = ""
+            },
+
+            label = {
+
+                Text(
+                    "Full Name *"
+                )
 
             },
-            label = {
-                Text("Full Name *")
-            },
+
             modifier =
-                Modifier.fillMaxWidth(),
-            singleLine = true
+                Modifier.fillMaxWidth()
+
         )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
+
         OutlinedTextField(
-            value = phone,
+
+            value =
+                phone,
+
             onValueChange = {
 
                 phone =
                     it.filter {
                             character ->
+
                         character.isDigit()
+
                     }
                         .take(10)
 
-                errorMessage = ""
+            },
+
+            label = {
+
+                Text(
+                    "Phone Number *"
+                )
 
             },
-            label = {
-                Text("Phone Number *")
-            },
+
             keyboardOptions =
+
                 KeyboardOptions(
+
                     keyboardType =
                         KeyboardType.Phone
+
                 ),
+
             modifier =
-                Modifier.fillMaxWidth(),
-            singleLine = true
+                Modifier.fillMaxWidth()
+
         )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
+
         OutlinedTextField(
-            value = email,
+
+            value =
+                email,
+
             onValueChange = {
 
                 email = it
 
-                errorMessage = ""
+            },
+
+            label = {
+
+                Text(
+                    "Email"
+                )
 
             },
-            label = {
-                Text("Email")
-            },
+
             keyboardOptions =
+
                 KeyboardOptions(
+
                     keyboardType =
                         KeyboardType.Email
+
                 ),
+
             modifier =
-                Modifier.fillMaxWidth(),
-            singleLine = true
+                Modifier.fillMaxWidth()
+
         )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
-        ExposedDropdownMenuBox(
-            expanded =
-                genderExpanded,
 
-            onExpandedChange = {
+        OutlinedTextField(
 
-                genderExpanded =
-                    !genderExpanded
+            value =
+                gender,
 
-            }
-        ) {
+            onValueChange = {
 
-            OutlinedTextField(
-                value = gender,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text("Gender *")
-                },
-                trailingIcon = {
+                gender = it
 
-                    ExposedDropdownMenuDefaults
-                        .TrailingIcon(
-                            expanded =
-                                genderExpanded
-                        )
+            },
 
-                },
-                modifier =
-                    Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-            )
+            label = {
 
-            ExposedDropdownMenu(
-                expanded =
-                    genderExpanded,
+                Text(
+                    "Gender *"
+                )
 
-                onDismissRequest = {
+            },
 
-                    genderExpanded =
-                        false
+            modifier =
+                Modifier.fillMaxWidth()
 
-                }
-            ) {
+        )
 
-                genders.forEach {
-                        item ->
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(item)
-                        },
-                        onClick = {
-
-                            gender = item
-
-                            genderExpanded =
-                                false
-
-                        }
-                    )
-
-                }
-
-            }
-
-        }
 
         Spacer(
             modifier =
                 Modifier.height(24.dp)
         )
 
+
         Text(
-            text = "Location Details",
+
+            text =
+                "Location Details",
+
             style =
                 MaterialTheme
                     .typography
                     .titleLarge
+
         )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
-        ExposedDropdownMenuBox(
-            expanded =
-                districtExpanded,
 
-            onExpandedChange = {
+        OutlinedTextField(
 
-                districtExpanded =
-                    !districtExpanded
+            value =
+                district,
 
-            }
-        ) {
+            onValueChange = {
 
-            OutlinedTextField(
-                value = district,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text("District *")
-                },
-                trailingIcon = {
+                district = it
 
-                    ExposedDropdownMenuDefaults
-                        .TrailingIcon(
-                            expanded =
-                                districtExpanded
-                        )
+            },
 
-                },
-                modifier =
-                    Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-            )
+            label = {
 
-            ExposedDropdownMenu(
-                expanded =
-                    districtExpanded,
+                Text(
+                    "District *"
+                )
 
-                onDismissRequest = {
+            },
 
-                    districtExpanded =
-                        false
+            modifier =
+                Modifier.fillMaxWidth()
 
-                }
-            ) {
+        )
 
-                districts.forEach {
-                        item ->
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(item)
-                        },
-                        onClick = {
-
-                            district =
-                                item
-
-                            policeStation =
-                                ""
-
-                            districtExpanded =
-                                false
-
-                        }
-                    )
-
-                }
-
-            }
-
-        }
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
-        ExposedDropdownMenuBox(
-            expanded =
-                policeStationExpanded,
 
-            onExpandedChange = {
+        OutlinedTextField(
 
-                policeStationExpanded =
-                    !policeStationExpanded
+            value =
+                policeStation,
 
-            }
-        ) {
+            onValueChange = {
 
-            OutlinedTextField(
-                value = policeStation,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text("Police Station / Thana *")
-                },
-                trailingIcon = {
+                policeStation = it
 
-                    ExposedDropdownMenuDefaults
-                        .TrailingIcon(
-                            expanded =
-                                policeStationExpanded
-                        )
+            },
 
-                },
-                modifier =
-                    Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-            )
+            label = {
 
-            ExposedDropdownMenu(
-                expanded =
-                    policeStationExpanded,
+                Text(
+                    "Police Station / Block *"
+                )
 
-                onDismissRequest = {
+            },
 
-                    policeStationExpanded =
-                        false
+            modifier =
+                Modifier.fillMaxWidth()
 
-                }
-            ) {
+        )
 
-                policeStations.forEach {
-                        item ->
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(item)
-                        },
-                        onClick = {
-
-                            policeStation =
-                                item
-
-                            policeStationExpanded =
-                                false
-
-                        }
-                    )
-
-                }
-
-            }
-
-        }
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
-        ExposedDropdownMenuBox(
-            expanded =
-                localityExpanded,
 
-            onExpandedChange = {
+        OutlinedTextField(
 
-                localityExpanded =
-                    !localityExpanded
+            value =
+                postOffice,
 
-            }
-        ) {
+            onValueChange = {
 
-            OutlinedTextField(
-                value = locality,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text("Area Type *")
-                },
-                trailingIcon = {
+                postOffice = it
 
-                    ExposedDropdownMenuDefaults
-                        .TrailingIcon(
-                            expanded =
-                                localityExpanded
-                        )
+            },
 
-                },
-                modifier =
-                    Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-            )
+            label = {
 
-            ExposedDropdownMenu(
-                expanded =
-                    localityExpanded,
+                Text(
+                    "Post Office *"
+                )
 
-                onDismissRequest = {
+            },
 
-                    localityExpanded =
-                        false
+            modifier =
+                Modifier.fillMaxWidth()
 
-                }
-            ) {
+        )
 
-                localities.forEach {
-                        item ->
 
-                    DropdownMenuItem(
-                        text = {
-                            Text(item)
-                        },
-                        onClick = {
+        Spacer(
+            modifier =
+                Modifier.height(12.dp)
+        )
 
-                            locality =
-                                item
 
-                            localityExpanded =
-                                false
+        OutlinedTextField(
 
-                        }
-                    )
+            value =
+                areaType,
 
-                }
+            onValueChange = {
 
-            }
+                areaType = it
 
-        }
+            },
+
+            label = {
+
+                Text(
+                    "Area Type *"
+                )
+
+            },
+
+            modifier =
+                Modifier.fillMaxWidth()
+
+        )
+
+
+        Spacer(
+            modifier =
+                Modifier.height(12.dp)
+        )
+
+
+        OutlinedTextField(
+
+            value =
+                villageOrLocality,
+
+            onValueChange = {
+
+                villageOrLocality = it
+
+            },
+
+            label = {
+
+                Text(
+                    "Village / Locality *"
+                )
+
+            },
+
+            modifier =
+                Modifier.fillMaxWidth()
+
+        )
+
+
+        Spacer(
+            modifier =
+                Modifier.height(12.dp)
+        )
+
+
+        OutlinedTextField(
+
+            value =
+                pincode,
+
+            onValueChange = {
+
+                pincode =
+                    it.filter {
+                            character ->
+
+                        character.isDigit()
+
+                    }
+                        .take(6)
+
+            },
+
+            label = {
+
+                Text(
+                    "Pincode *"
+                )
+
+            },
+
+            keyboardOptions =
+
+                KeyboardOptions(
+
+                    keyboardType =
+                        KeyboardType.Number
+
+                ),
+
+            modifier =
+                Modifier.fillMaxWidth()
+
+        )
+
 
         Spacer(
             modifier =
                 Modifier.height(24.dp)
         )
 
+
         Text(
-            text = "Professional Details",
+
+            text =
+                "Professional Details",
+
             style =
                 MaterialTheme
                     .typography
                     .titleLarge
+
         )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
-        ExposedDropdownMenuBox(
-            expanded =
-                experienceExpanded,
 
-            onExpandedChange = {
+        OutlinedTextField(
 
-                experienceExpanded =
-                    !experienceExpanded
+            value =
+                experience,
 
-            }
-        ) {
+            onValueChange = {
 
-            OutlinedTextField(
-                value = experience,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text("Experience *")
-                },
-                trailingIcon = {
+                experience = it
 
-                    ExposedDropdownMenuDefaults
-                        .TrailingIcon(
-                            expanded =
-                                experienceExpanded
-                        )
+            },
 
-                },
-                modifier =
-                    Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-            )
+            label = {
 
-            ExposedDropdownMenu(
-                expanded =
-                    experienceExpanded,
+                Text(
+                    "Experience (Years) *"
+                )
 
-                onDismissRequest = {
+            },
 
-                    experienceExpanded =
-                        false
+            keyboardOptions =
 
-                }
-            ) {
+                KeyboardOptions(
 
-                experienceOptions.forEach {
-                        item ->
+                    keyboardType =
+                        KeyboardType.Number
 
-                    DropdownMenuItem(
-                        text = {
-                            Text(item)
-                        },
-                        onClick = {
+                ),
 
-                            experience =
-                                item
+            modifier =
+                Modifier.fillMaxWidth()
 
-                            experienceExpanded =
-                                false
+        )
 
-                        }
-                    )
-
-                }
-
-            }
-
-        }
 
         Spacer(
             modifier =
                 Modifier.height(24.dp)
         )
 
+
         Text(
-            text = "Service Details",
+
+            text =
+                "Select Categories",
+
             style =
                 MaterialTheme
                     .typography
                     .titleLarge
+
         )
 
-        Spacer(
-            modifier =
-                Modifier.height(12.dp)
-        )
-
-        ExposedDropdownMenuBox(
-            expanded =
-                categoryExpanded,
-
-            onExpandedChange = {
-
-                categoryExpanded =
-                    !categoryExpanded
-
-            }
-        ) {
-
-            OutlinedTextField(
-                value = category,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text("Category *")
-                },
-                trailingIcon = {
-
-                    ExposedDropdownMenuDefaults
-                        .TrailingIcon(
-                            expanded =
-                                categoryExpanded
-                        )
-
-                },
-                modifier =
-                    Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
-                expanded =
-                    categoryExpanded,
-
-                onDismissRequest = {
-
-                    categoryExpanded =
-                        false
-
-                }
-            ) {
-
-                categories.forEach {
-                        item ->
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(item)
-                        },
-                        onClick = {
-
-                            category =
-                                item
-
-                            subCategory =
-                                ""
-
-                            service =
-                                ""
-
-                            categoryExpanded =
-                                false
-
-                        }
-                    )
-
-                }
-
-            }
-
-        }
-
-        Spacer(
-            modifier =
-                Modifier.height(12.dp)
-        )
-
-        ExposedDropdownMenuBox(
-            expanded =
-                subCategoryExpanded,
-
-            onExpandedChange = {
-
-                if (
-                    category
-                        .isNotBlank()
-                ) {
-
-                    subCategoryExpanded =
-                        !subCategoryExpanded
-
-                }
-
-            }
-        ) {
-
-            OutlinedTextField(
-                value = subCategory,
-                onValueChange = {},
-                readOnly = true,
-                enabled =
-                    category
-                        .isNotBlank(),
-                label = {
-                    Text("Sub Category *")
-                },
-                trailingIcon = {
-
-                    ExposedDropdownMenuDefaults
-                        .TrailingIcon(
-                            expanded =
-                                subCategoryExpanded
-                        )
-
-                },
-                modifier =
-                    Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
-                expanded =
-                    subCategoryExpanded,
-
-                onDismissRequest = {
-
-                    subCategoryExpanded =
-                        false
-
-                }
-            ) {
-
-                subCategories.forEach {
-                        item ->
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(item)
-                        },
-                        onClick = {
-
-                            subCategory =
-                                item
-
-                            service =
-                                ""
-
-                            subCategoryExpanded =
-                                false
-
-                        }
-                    )
-
-                }
-
-            }
-
-        }
-
-        Spacer(
-            modifier =
-                Modifier.height(12.dp)
-        )
-
-        ExposedDropdownMenuBox(
-            expanded =
-                serviceExpanded,
-
-            onExpandedChange = {
-
-                if (
-                    subCategory
-                        .isNotBlank()
-                ) {
-
-                    serviceExpanded =
-                        !serviceExpanded
-
-                }
-
-            }
-        ) {
-
-            OutlinedTextField(
-                value = service,
-                onValueChange = {},
-                readOnly = true,
-                enabled =
-                    subCategory
-                        .isNotBlank(),
-                label = {
-                    Text("Service *")
-                },
-                trailingIcon = {
-
-                    ExposedDropdownMenuDefaults
-                        .TrailingIcon(
-                            expanded =
-                                serviceExpanded
-                        )
-
-                },
-                modifier =
-                    Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
-                expanded =
-                    serviceExpanded,
-
-                onDismissRequest = {
-
-                    serviceExpanded =
-                        false
-
-                }
-            ) {
-
-                services.forEach {
-                        item ->
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(item)
-                        },
-                        onClick = {
-
-                            service =
-                                item
-
-                            serviceExpanded =
-                                false
-
-                        }
-                    )
-
-                }
-
-            }
-
-        }
-
-        Spacer(
-            modifier =
-                Modifier.height(24.dp)
-        )
-
-        Text(
-            text = "Basic Verification",
-            style =
-                MaterialTheme
-                    .typography
-                    .titleLarge
-        )
 
         Spacer(
             modifier =
                 Modifier.height(8.dp)
         )
 
-        Text(
-            text =
-                "তথ্য পরে Offline Verification-এর মাধ্যমে যাচাই করা হবে"
+
+        categories.forEach {
+                category ->
+
+            SelectionRow(
+
+                text =
+                    category,
+
+                selected =
+                    selectedCategories
+                        .contains(
+                            category
+                        ),
+
+                onClick = {
+
+                    if (
+                        selectedCategories
+                            .contains(
+                                category
+                            )
+                    ) {
+
+                        selectedCategories
+                            .remove(
+                                category
+                            )
+
+                    } else {
+
+                        selectedCategories
+                            .add(
+                                category
+                            )
+
+                    }
+
+
+                    selectedSubCategories
+                        .removeAll {
+
+                            !selectedCategories
+                                .flatMap {
+                                        selected ->
+
+                                    getSubCategories(
+                                        selected
+                                    )
+
+                                }
+                                .contains(
+                                    it
+                                )
+
+                        }
+
+
+                    selectedServices
+                        .removeAll {
+
+                            !selectedSubCategories
+                                .flatMap {
+                                        selected ->
+
+                                    getServices(
+                                        selected
+                                    )
+
+                                }
+                                .contains(
+                                    it
+                                )
+
+                        }
+
+                }
+
+            )
+
+        }
+
+
+        if (
+            selectedCategories
+                .isNotEmpty()
+        ) {
+
+            Spacer(
+                modifier =
+                    Modifier.height(24.dp)
+            )
+
+
+            Text(
+
+                text =
+                    "Select Sub Categories",
+
+                style =
+                    MaterialTheme
+                        .typography
+                        .titleLarge
+
+            )
+
+
+            Spacer(
+                modifier =
+                    Modifier.height(8.dp)
+            )
+
+
+            availableSubCategories
+                .forEach {
+                        subCategory ->
+
+                    SelectionRow(
+
+                        text =
+                            subCategory,
+
+                        selected =
+
+                            selectedSubCategories
+                                .contains(
+                                    subCategory
+                                ),
+
+                        onClick = {
+
+                            if (
+
+                                selectedSubCategories
+                                    .contains(
+                                        subCategory
+                                    )
+
+                            ) {
+
+                                selectedSubCategories
+                                    .remove(
+                                        subCategory
+                                    )
+
+                            } else {
+
+                                selectedSubCategories
+                                    .add(
+                                        subCategory
+                                    )
+
+                            }
+
+
+                            selectedServices
+                                .removeAll {
+
+                                    !selectedSubCategories
+                                        .flatMap {
+                                                selected ->
+
+                                            getServices(
+                                                selected
+                                            )
+
+                                        }
+                                        .contains(
+                                            it
+                                        )
+
+                                }
+
+                        }
+
+                    )
+
+                }
+
+        }
+
+
+        if (
+            selectedSubCategories
+                .isNotEmpty()
+        ) {
+
+            Spacer(
+                modifier =
+                    Modifier.height(24.dp)
+            )
+
+
+            Text(
+
+                text =
+                    "Select Services",
+
+                style =
+                    MaterialTheme
+                        .typography
+                        .titleLarge
+
+            )
+
+
+            Spacer(
+                modifier =
+                    Modifier.height(8.dp)
+            )
+
+
+            availableServices
+                .forEach {
+                        service ->
+
+                    SelectionRow(
+
+                        text =
+                            service,
+
+                        selected =
+
+                            selectedServices
+                                .contains(
+                                    service
+                                ),
+
+                        onClick = {
+
+                            if (
+
+                                selectedServices
+                                    .contains(
+                                        service
+                                    )
+
+                            ) {
+
+                                selectedServices
+                                    .remove(
+                                        service
+                                    )
+
+                            } else {
+
+                                selectedServices
+                                    .add(
+                                        service
+                                    )
+
+                            }
+
+                        }
+
+                    )
+
+                }
+
+        }
+
+
+        Spacer(
+            modifier =
+                Modifier.height(24.dp)
         )
+
+
+        Text(
+
+            text =
+                "Verification Details",
+
+            style =
+                MaterialTheme
+                    .typography
+                    .titleLarge
+
+        )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
+
         OutlinedTextField(
-            value = aadhaarNumber,
+
+            value =
+                aadhaarNumber,
+
             onValueChange = {
 
                 aadhaarNumber =
                     it.filter {
                             character ->
+
                         character.isDigit()
+
                     }
                         .take(12)
 
-                errorMessage = ""
+            },
+
+            label = {
+
+                Text(
+                    "Aadhaar Number *"
+                )
 
             },
-            label = {
-                Text("Aadhaar Number *")
-            },
+
             keyboardOptions =
+
                 KeyboardOptions(
+
                     keyboardType =
                         KeyboardType.Number
+
                 ),
+
             modifier =
-                Modifier.fillMaxWidth(),
-            singleLine = true
+                Modifier.fillMaxWidth()
+
         )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
+
         OutlinedTextField(
-            value = licenceNumber,
+
+            value =
+                licenceNumber,
+
             onValueChange = {
 
-                licenceNumber =
-                    it
+                licenceNumber = it
 
             },
+
             label = {
+
                 Text(
-                    "Licence / Registration Number (If Required)"
+                    "Licence / Registration Number"
                 )
+
             },
+
             modifier =
-                Modifier.fillMaxWidth(),
-            singleLine = true
+                Modifier.fillMaxWidth()
+
         )
+
 
         Spacer(
             modifier =
                 Modifier.height(12.dp)
         )
 
+
         OutlinedTextField(
-            value = about,
+
+            value =
+                about,
+
             onValueChange = {
 
                 about = it
 
             },
+
             label = {
-                Text("About Yourself")
+
+                Text(
+                    "About Yourself"
+                )
+
             },
+
             modifier =
                 Modifier.fillMaxWidth(),
-            minLines = 4
+
+            minLines =
+                4
+
         )
+
 
         if (
             errorMessage
@@ -1264,23 +1398,58 @@ fun ProviderRegistrationScreen(
                     Modifier.height(12.dp)
             )
 
+
             Text(
+
                 text =
                     errorMessage,
+
                 color =
                     MaterialTheme
                         .colorScheme
                         .error
+
             )
 
         }
+
+
+        if (
+            providerUiState
+                .errorMessage
+                .isNotBlank()
+        ) {
+
+            Spacer(
+                modifier =
+                    Modifier.height(12.dp)
+            )
+
+
+            Text(
+
+                text =
+                    providerUiState
+                        .errorMessage,
+
+                color =
+                    MaterialTheme
+                        .colorScheme
+                        .error
+
+            )
+
+        }
+
 
         Spacer(
             modifier =
                 Modifier.height(24.dp)
         )
 
+
         Button(
+
             onClick = {
 
                 when {
@@ -1294,17 +1463,22 @@ fun ProviderRegistrationScreen(
 
                     }
 
-                    phone.length != 10 -> {
+
+                    phone
+                        .length != 10 -> {
 
                         errorMessage =
                             "Please enter a valid 10-digit phone number"
 
                     }
 
+
                     email
                         .isNotBlank()
+
                             &&
-                            !android.util.Patterns
+
+                            !Patterns
                                 .EMAIL_ADDRESS
                                 .matcher(
                                     email
@@ -1316,69 +1490,78 @@ fun ProviderRegistrationScreen(
 
                     }
 
-                    gender
-                        .isBlank() -> {
-
-                        errorMessage =
-                            "Please select your gender"
-
-                    }
 
                     district
                         .isBlank() -> {
 
                         errorMessage =
-                            "Please select your district"
+                            "Please enter your district"
 
                     }
+
 
                     policeStation
                         .isBlank() -> {
 
                         errorMessage =
-                            "Please select your police station"
+                            "Please enter your police station or block"
 
                     }
 
-                    locality
+
+                    postOffice
                         .isBlank() -> {
 
                         errorMessage =
-                            "Please select your area type"
+                            "Please enter your post office"
 
                     }
 
-                    experience
+
+                    villageOrLocality
                         .isBlank() -> {
 
                         errorMessage =
-                            "Please select your experience"
+                            "Please enter your village or locality"
 
                     }
 
-                    category
-                        .isBlank() -> {
+
+                    pincode
+                        .length != 6 -> {
 
                         errorMessage =
-                            "Please select a category"
+                            "Please enter a valid 6-digit pincode"
 
                     }
 
-                    subCategory
-                        .isBlank() -> {
+
+                    selectedCategories
+                        .isEmpty() -> {
 
                         errorMessage =
-                            "Please select a sub category"
+                            "Please select at least one category"
 
                     }
 
-                    service
-                        .isBlank() -> {
+
+                    selectedSubCategories
+                        .isEmpty() -> {
 
                         errorMessage =
-                            "Please select a service"
+                            "Please select at least one sub category"
 
                     }
+
+
+                    selectedServices
+                        .isEmpty() -> {
+
+                        errorMessage =
+                            "Please select at least one service"
+
+                    }
+
 
                     aadhaarNumber
                         .length != 12 -> {
@@ -1388,24 +1571,130 @@ fun ProviderRegistrationScreen(
 
                     }
 
+
                     else -> {
 
-                        navController.navigate(
-                            Screen
-                                .ProviderDashboard
-                                .route
+                        val currentUser =
+
+                            FirebaseAuth
+                                .getInstance()
+                                .currentUser
+
+
+                        if (
+                            currentUser == null
                         ) {
 
-                            popUpTo(
-                                Screen
-                                    .ProviderRegistration
-                                    .route
-                            ) {
+                            errorMessage =
+                                "User not logged in"
 
-                                inclusive =
-                                    true
+                        } else {
 
-                            }
+                            val provider =
+
+                                Provider(
+
+                                    id =
+                                        currentUser.uid,
+
+                                    userId =
+                                        currentUser.uid,
+
+                                    fullName =
+                                        fullName.trim(),
+
+                                    phone =
+                                        phone.trim(),
+
+                                    email =
+                                        email.trim(),
+
+                                    gender =
+                                        gender.trim(),
+
+                                    district =
+                                        district.trim(),
+
+                                    policeStationOrBlock =
+                                        policeStation.trim(),
+
+                                    postOffice =
+                                        postOffice.trim(),
+
+                                    areaType =
+                                        areaType.trim(),
+
+                                    villageOrLocality =
+                                        villageOrLocality
+                                            .trim(),
+
+                                    pincode =
+                                        pincode,
+
+                                    categoryIds =
+
+                                        selectedCategories
+                                            .toList(),
+
+                                    subCategoryIds =
+
+                                        selectedSubCategories
+                                            .toList(),
+
+                                    serviceItemIds =
+
+                                        selectedServices
+                                            .toList(),
+
+                                    experienceYears =
+
+                                        experience
+                                            .toIntOrNull()
+                                            ?: 0,
+
+                                    about =
+                                        about.trim(),
+
+                                    identityDocumentType =
+                                        "Aadhaar",
+
+                                    identityDocumentLastFour =
+
+                                        aadhaarNumber
+                                            .takeLast(4),
+
+                                    licenceOrRegistrationNumber =
+
+                                        licenceNumber
+                                            .trim(),
+
+                                    verificationStatus =
+                                        "Pending",
+
+                                    profileCompleted =
+                                        true,
+
+                                    isVerified =
+                                        false,
+
+                                    isApproved =
+                                        false,
+
+                                    isAvailable =
+                                        true,
+
+                                    createdAt =
+
+                                        System
+                                            .currentTimeMillis()
+
+                                )
+
+
+                            providerViewModel
+                                .saveProvider(
+                                    provider
+                                )
 
                         }
 
@@ -1414,22 +1703,122 @@ fun ProviderRegistrationScreen(
                 }
 
             },
+
+            enabled =
+
+                !providerUiState
+                    .isLoading,
+
             modifier =
+
                 Modifier
                     .fillMaxWidth()
                     .height(54.dp)
+
         ) {
 
-            Text(
-                text =
-                    "Submit Provider Registration"
-            )
+            if (
+                providerUiState
+                    .isLoading
+            ) {
+
+                CircularProgressIndicator(
+
+                    strokeWidth =
+                        2.dp
+
+                )
+
+            } else {
+
+                Text(
+
+                    text =
+                        "Submit Provider Registration"
+
+                )
+
+            }
 
         }
+
 
         Spacer(
             modifier =
                 Modifier.height(30.dp)
+        )
+
+    }
+
+}
+
+
+@Composable
+private fun SelectionRow(
+
+    text: String,
+
+    selected: Boolean,
+
+    onClick: () -> Unit
+
+) {
+
+    Row(
+
+        modifier =
+
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    vertical = 4.dp
+                )
+
+    ) {
+
+        Button(
+
+            onClick =
+                onClick
+
+        ) {
+
+            Text(
+
+                text =
+
+                    if (selected) {
+
+                        "✓"
+
+                    } else {
+
+                        "+"
+
+                    }
+
+            )
+
+        }
+
+
+        Spacer(
+            modifier =
+                Modifier.width(10.dp)
+        )
+
+
+        Text(
+
+            text =
+                text,
+
+            modifier =
+                Modifier
+                    .padding(
+                        top = 10.dp
+                    )
+
         )
 
     }

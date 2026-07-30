@@ -142,4 +142,76 @@ class ServiceRepository {
             null
         }
     }
+    suspend fun postService(
+        service: Service
+    ): Result<Unit> {
+
+        return try {
+
+            val document =
+                if (service.id.isBlank()) {
+
+                    db.collection("services")
+                        .document()
+
+                } else {
+
+                    db.collection("services")
+                        .document(service.id)
+
+                }
+
+            val serviceToSave =
+                service.copy(
+                    id = document.id
+                )
+
+            document
+                .set(serviceToSave)
+                .await()
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+
+        }
+    }
+
+
+    suspend fun updateService(
+        serviceId: String,
+        title: String,
+        description: String,
+        category: String,
+        district: String,
+        block: String,
+        salary: Double
+    ): Result<Unit> {
+
+        return try {
+
+            val updateData = mapOf(
+                "title" to title,
+                "description" to description,
+                "category" to category,
+                "district" to district,
+                "block" to block,
+                "salary" to salary
+            )
+
+            db.collection("services")
+                .document(serviceId)
+                .update(updateData)
+                .await()
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+
+        }
+    }
 }

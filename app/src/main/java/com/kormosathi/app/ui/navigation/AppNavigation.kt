@@ -43,85 +43,61 @@ fun AppNavigation() {
         startDestination = Screen.Splash.route
     ) {
 
-        composable(
-            Screen.Splash.route
-        ) {
+        composable(Screen.Splash.route) {
 
             SplashScreen(
                 navController = navController,
                 authViewModel = authViewModel
             )
-
         }
 
-        composable(
-            Screen.Welcome.route
-        ) {
+        composable(Screen.Welcome.route) {
 
             WelcomeScreen(
                 navController = navController
             )
-
         }
 
-        composable(
-            Screen.Login.route
-        ) {
+        composable(Screen.Login.route) {
 
             LoginScreen(
                 navController = navController,
                 authViewModel = authViewModel
             )
-
         }
 
-        composable(
-            Screen.Otp.route
-        ) {
+        composable(Screen.Otp.route) {
 
             OtpScreen(
                 navController = navController,
                 authViewModel = authViewModel
             )
-
         }
 
-        composable(
-            Screen.ProfileSetup.route
-        ) {
+        composable(Screen.ProfileSetup.route) {
 
             ProfileSetupScreen(
                 navController = navController
             )
-
         }
 
-        composable(
-            Screen.Home.route
-        ) {
+        composable(Screen.Home.route) {
 
             HomeScreen(
                 navController = navController,
                 authViewModel = authViewModel
             )
-
         }
 
-        // শুধু একবার Profile route থাকবে
-        composable(
-            Screen.Profile.route
-        ) {
+        composable(Screen.Profile.route) {
 
             ProfileScreen(
                 navController = navController
             )
-
         }
 
         // Customer Category
-        composable(
-            Screen.Category.route
-        ) {
+        composable(Screen.Category.route) {
 
             CategoryScreen(
                 onCategoryClick = { categoryId ->
@@ -131,20 +107,15 @@ fun AppNavigation() {
                             categoryId
                         )
                     )
-
                 }
             )
-
         }
 
-        // Customer Sub Category
-        composable(
-            Screen.SubCategory.route
-        ) { backStackEntry ->
+        // Customer Subcategory
+        composable(Screen.SubCategory.route) { backStackEntry ->
 
             val categoryId =
-                backStackEntry
-                    .arguments
+                backStackEntry.arguments
                     ?.getString("categoryId")
                     ?: ""
 
@@ -152,17 +123,13 @@ fun AppNavigation() {
                 categoryId = categoryId,
                 navController = navController
             )
-
         }
 
         // Customer Service Items
-        composable(
-            Screen.ServiceItems.route
-        ) { backStackEntry ->
+        composable(Screen.ServiceItems.route) { backStackEntry ->
 
             val subCategoryId =
-                backStackEntry
-                    .arguments
+                backStackEntry.arguments
                     ?.getString("subCategoryId")
                     ?: ""
 
@@ -170,26 +137,19 @@ fun AppNavigation() {
                 subCategoryId = subCategoryId,
                 navController = navController
             )
-
         }
 
-        composable(
-            Screen.ServiceList.route
-        ) {
+        composable(Screen.ServiceList.route) {
 
             ServiceListScreen(
                 navController = navController
             )
-
         }
 
-        composable(
-            Screen.ServiceDetails.route
-        ) { backStackEntry ->
+        composable(Screen.ServiceDetails.route) { backStackEntry ->
 
             val serviceId =
-                backStackEntry
-                    .arguments
+                backStackEntry.arguments
                     ?.getString("serviceId")
                     ?: ""
 
@@ -197,59 +157,45 @@ fun AppNavigation() {
                 navController = navController,
                 serviceId = serviceId
             )
-
         }
 
-        composable(
-            Screen.MyBookings.route
-        ) {
+        composable(Screen.MyBookings.route) {
 
             MyBookingsScreen(
                 navController = navController
             )
-
         }
 
-        composable(
-            Screen.SavedServices.route
-        ) {
+        composable(Screen.SavedServices.route) {
 
             SavedServicesScreen(
                 navController = navController
             )
-
         }
 
         // Provider Registration
-        composable(
-            Screen.ProviderRegistration.route
-        ) {
+        composable(Screen.ProviderRegistration.route) {
 
             ProviderRegistrationScreen(
                 navController = navController
             )
-
         }
 
         // Provider Category Selection
-        composable(
-            Screen.CategorySelection.route
-        ) {
+        composable(Screen.CategorySelection.route) {
 
             CategorySelectionScreen(
                 navController = navController
             )
-
         }
 
-        // Provider Sub Category Selection
+        // Provider Subcategory Selection
         composable(
             Screen.SubCategorySelection.route
         ) { backStackEntry ->
 
             val categoryId =
-                backStackEntry
-                    .arguments
+                backStackEntry.arguments
                     ?.getString("categoryId")
                     ?: ""
 
@@ -257,25 +203,22 @@ fun AppNavigation() {
                 navController = navController,
                 categoryId = categoryId
             )
-
         }
 
-        // Provider Service Selection
+        // Provider Service Item Selection
         composable(
             Screen.ServiceItemSelection.route
         ) { backStackEntry ->
 
-            val subCategoryId =
-                backStackEntry
-                    .arguments
-                    ?.getString("subCategoryId")
+            val subCategory =
+                backStackEntry.arguments
+                    ?.getString("subCategory")
                     ?: ""
 
             ServiceItemSelectionScreen(
                 navController = navController,
-                subCategory = subCategoryId
+                subCategory = subCategory
             )
-
         }
 
         // Provider Dashboard
@@ -286,26 +229,19 @@ fun AppNavigation() {
             ProviderDashboardScreen(
                 navController = navController
             )
-
         }
 
-        composable(
-            Screen.PostService.route
-        ) {
+        composable(Screen.PostService.route) {
 
             PostServiceScreen(
                 navController = navController
             )
-
         }
 
-        composable(
-            Screen.EditService.route
-        ) { backStackEntry ->
+        composable(Screen.EditService.route) { backStackEntry ->
 
             val serviceId =
-                backStackEntry
-                    .arguments
+                backStackEntry.arguments
                     ?.getString("serviceId")
                     ?: ""
 
@@ -313,16 +249,13 @@ fun AppNavigation() {
                 navController = navController,
                 ServiceId = serviceId
             )
-
         }
 
-        composable(
-            Screen.ProviderList.route
-        ) { backStackEntry ->
+        // Customer Provider List
+        composable(Screen.ProviderList.route) { backStackEntry ->
 
             val serviceName =
-                backStackEntry
-                    .arguments
+                backStackEntry.arguments
                     ?.getString("serviceName")
                     ?: ""
 
@@ -330,9 +263,6 @@ fun AppNavigation() {
                 navController = navController,
                 serviceName = serviceName
             )
-
         }
-
     }
-
 }

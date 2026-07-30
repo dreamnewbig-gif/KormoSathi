@@ -10,17 +10,28 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class ProfileUiState(
+
     val isLoading: Boolean = false,
+
     val profile: UserProfile? = null,
+
     val isSuccess: Boolean = false,
+
     val errorMessage: String = ""
+
 )
 
 class ProfileViewModel(
-    private val repository: ProfileRepository = ProfileRepository()
+
+    private val repository: ProfileRepository =
+        ProfileRepository()
+
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ProfileUiState())
+    private val _uiState =
+        MutableStateFlow(
+            ProfileUiState()
+        )
 
     val uiState: StateFlow<ProfileUiState> =
         _uiState.asStateFlow()
@@ -45,14 +56,18 @@ class ProfileViewModel(
                         isLoading = false,
                         profile = profile,
                         errorMessage =
-                            if (profile == null) {
+                            if (
+                                profile == null
+                            ) {
                                 "Profile not found"
                             } else {
                                 ""
                             }
                     )
 
-            } catch (e: Exception) {
+            } catch (
+                e: Exception
+            ) {
 
                 _uiState.value =
                     _uiState.value.copy(
@@ -94,7 +109,8 @@ class ProfileViewModel(
                         )
 
                 }
-                .onFailure { exception ->
+                .onFailure {
+                        exception ->
 
                     _uiState.value =
                         _uiState.value.copy(

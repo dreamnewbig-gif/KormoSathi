@@ -22,7 +22,15 @@ data class Provider(
 
     val district: String = "",
 
-    val state: String = "",
+    val policeStationOrBlock: String = "",
+
+    val postOffice: String = "",
+
+    val areaType: String = "",
+
+    val villageOrLocality: String = "",
+
+    val state: String = "West Bengal",
 
     val pincode: String = "",
 
@@ -41,6 +49,17 @@ data class Provider(
     val about: String = "",
 
     val languages: List<String> = emptyList(),
+
+    // Basic verification information
+    val identityDocumentType: String = "",
+
+    val identityDocumentLastFour: String = "",
+
+    val licenceOrRegistrationType: String = "",
+
+    val licenceOrRegistrationNumber: String = "",
+
+    val verificationStatus: String = "Pending",
 
     val profileCompleted: Boolean = false,
 

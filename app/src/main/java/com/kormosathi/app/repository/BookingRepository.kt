@@ -90,5 +90,28 @@ class BookingRepository {
         }
 
     }
+    suspend fun getApplicantsByService(
+        serviceId: String
+    ): List<Booking> {
+
+        return try {
+
+            db.collection("bookings")
+                .whereEqualTo(
+                    "serviceId",
+                    serviceId
+                )
+                .get()
+                .await()
+                .toObjects(
+                    Booking::class.java
+                )
+
+        } catch (e: Exception) {
+
+            emptyList()
+
+        }
+    }
 
 }
